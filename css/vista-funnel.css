@@ -1,4 +1,4 @@
-/* ==========================================================================
+?/* ==========================================================================
    VISTA CONSULTING — Funnel Segubeca
    Hoja de estilo única para Página 1 (landing) y Página 2 (thank-you).
 
@@ -55,11 +55,11 @@
   --font-editorial: 'Cormorant Garamond', Georgia, serif;
 
   /* Escala fluida — mismos roles que DESIGN.md §3 */
-  --t-display:   clamp(2.20rem, 1.15rem + 2.95vw, 3.70rem);
-  --t-statement: clamp(1.75rem, 1.05rem + 2.00vw, 2.88rem);
-  --t-headline:  clamp(1.50rem, 1.10rem + 1.15vw, 2.15rem);
-  --t-lead:      clamp(1.06rem, 0.98rem + 0.25vw, 1.25rem);
-  --t-body:      clamp(1.00rem, 0.95rem + 0.16vw, 1.09rem);
+  --t-display:   clamp(2.20rem, 1.15rem + 2.95cqw, 3.70rem);
+  --t-statement: clamp(1.75rem, 1.05rem + 2.00cqw, 2.88rem);
+  --t-headline:  clamp(1.50rem, 1.10rem + 1.15cqw, 2.15rem);
+  --t-lead:      clamp(1.06rem, 0.98rem + 0.25cqw, 1.25rem);
+  --t-body:      clamp(1.00rem, 0.95rem + 0.16cqw, 1.09rem);
   --t-small:     0.94rem;
   --t-micro:     0.80rem;
 
@@ -74,7 +74,7 @@
   --r-pill:  999px;
   --hair:    1px;
   --shell:   1240px; /* ancho máximo de contenido */
-  --gut:     clamp(20px, 4vw, 56px);
+  --gut:     clamp(20px, 4cqw, 56px);
 
   /* Sombra: muy contenida. La marca es plana; esto solo separa planos. */
   --shadow-soft: 0 2px 4px rgba(27,33,80,.04), 0 12px 32px rgba(27,33,80,.07);
@@ -117,8 +117,40 @@
    salía crema sobre crema; y con `.vsb input { color: inherit }` los campos
    de la sección índigo heredaban texto blanco sobre fondo blanco.
    ========================================================================== */
+/* El margen de 8px que el navegador le pone al <body> por omisión.
+   Se quita SOLO cuando .vsb es hijo directo del body — o sea, en las páginas
+   sueltas de este proyecto. Dentro de ClickFunnels el bloque va anidado en los
+   divs de CF, así que la regla no aplica y el CSS sigue sin tocar nada ajeno,
+   que es la razón de tener todo bajo el namespace .vsb.
+
+   No era solo cosmético: ese margen dejaba .vsb en 784px dentro de una ventana
+   de 800px, y como el dimensionado fluido ahora se mide en `cqw` contra .vsb,
+   TODO quedaba un 2% más chico de lo debido. Eso corrió el botón del popup
+   hasta el borde exacto del panel con scroll, y ahí el clic ya no producía un
+   submit — se veía como si la validación estuviera rota. */
+body:has(> .vsb) { margin: 0; }
+
 .vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
 .vsb {
+  /* ---- Contenedor de consulta — esto es lo que hace que el bloque funcione
+     dentro de ClickFunnels -------------------------------------------------
+     Todo el dimensionado fluido usa `cqw` (1% del ancho de ESTE contenedor) en
+     vez de `vw` (1% del ancho de la VENTANA), y los cortes de layout son
+     `@container`, no `@media`.
+
+     Por qué: pegado en CF el bloque no ocupa el ancho de la ventana sino una
+     Row de ~1000px. Con `vw`, en un monitor de 1900px la tipografía se
+     calculaba para 1900 y se pintaba dentro de 1000 — salía enorme, el
+     `nowrap` de .vsb-keep desbordaba, y el `overflow:hidden` de la sección lo
+     recortaba a media palabra. Con `cqw` el bloque se mide contra la caja en
+     la que realmente vive: CF, un iframe o la página suelta, da igual.
+
+     Lo que SÍ sigue en @media: `prefers-reduced-motion`, `print` y la regla
+     que depende del ALTO de la ventana — un container query de inline-size no
+     puede ver el alto. */
+  container-type: inline-size;
+  container-name: vsb;
+
   margin: 0;
   font-family: var(--font);
   font-size: var(--t-body);
@@ -181,8 +213,13 @@
 /* ==========================================================================
    4 · Layout
    ========================================================================== */
-.vsb-section { position: relative; padding: clamp(48px, 7vw, 96px) var(--gut); overflow: hidden; }
-.vsb-section.is-tight { padding-top: clamp(28px, 4vw, 52px); padding-bottom: clamp(28px, 4vw, 52px); }
+/* SIN overflow:hidden. Estaba para recortar las formas decorativas de §9, que
+   hoy no se usan, y en cambio recortaba el titular cuando el contenedor era más
+   angosto de lo previsto: texto cortado a media palabra y sin ningún aviso.
+   Si algún día se reactiva .vsb-form-slab, dale su propio envoltorio con
+   overflow:clip en lugar de devolver esta línea. */
+.vsb-section { position: relative; padding: clamp(48px, 7cqw, 96px) var(--gut); }
+.vsb-section.is-tight { padding-top: clamp(28px, 4cqw, 52px); padding-bottom: clamp(28px, 4cqw, 52px); }
 .vsb-shell { position: relative; width: 100%; max-width: var(--shell); margin-inline: auto; }
 .vsb-shell.is-narrow { max-width: 780px; }
 .vsb-center { text-align: center; }
@@ -225,7 +262,7 @@
 .vsb-nowrap { white-space: nowrap; }
 /* Mantiene un grupo de palabras junto, pero solo donde hay ancho para ello:
    en móvil un nowrap obliga al navegador a desbordar en lugar de partir. */
-@media (min-width: 641px) { .vsb-keep { white-space: nowrap; } }
+@container vsb (min-width: 641px) { .vsb-keep { white-space: nowrap; } }
 
 /* Medida de lectura: el cuerpo nunca corre a todo lo ancho. */
 .vsb-measure { max-width: 46ch; }
@@ -275,7 +312,7 @@
 .vsb-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 12px;
   padding: 20px 34px; border-radius: var(--r-pill);
-  font-size: clamp(0.94rem, 0.88rem + 0.2vw, 1.06rem);
+  font-size: clamp(0.94rem, 0.88rem + 0.2cqw, 1.06rem);
   font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
   text-align: center; line-height: 1.1;
   background: var(--btn-fill); color: var(--btn-ink);
@@ -328,7 +365,7 @@
    etiquetas del formulario de Proyección heredan blanco y desaparecen. */
 .vsb-box {
   position: relative; border-radius: var(--r-box);
-  padding: clamp(28px, 3.4vw, 56px);
+  padding: clamp(28px, 3.4cqw, 56px);
   background: var(--cream-050);   /* relleno tonal, SIN borde */
   box-shadow: var(--shadow-soft);
 
@@ -360,7 +397,7 @@
   color: var(--peri-500);
 }
 /* Paralelogramo del logo, ampliado y recortado por el borde derecho. */
-.vsb-form-slab { top: -6%; right: -14%; width: min(46vw, 620px); aspect-ratio: 1 / 1.35; opacity: .14; }
+.vsb-form-slab { top: -6%; right: -14%; width: min(46cqw, 620px); aspect-ratio: 1 / 1.35; opacity: .14; }
 .vsb-form-slab::before {
   content: ''; position: absolute; inset: 0; background: currentColor;
   clip-path: polygon(34% 0%, 100% 0%, 66% 100%, 0% 100%);
@@ -379,15 +416,15 @@
    10 · Encabezado de marca
    ========================================================================== */
 /* Logo centrado. Creció en dos rondas sobre la versión original:
-   +15% (26→30 / 2.6→3vw / 34→39) y luego +20% más (30→36 / 3→3.6vw / 39→47).
+   +15% (26→30 / 2.6→3cqw / 34→39) y luego +20% más (30→36 / 3→3.6cqw / 39→47).
    Acumulado 1.38× respecto al arranque.
    El header ya no lleva rótulo a la derecha, así que `center` centra de verdad;
    con space-between y un solo hijo el logo se quedaría pegado a la izquierda. */
 .vsb-topbar {
   display: flex; align-items: center; justify-content: center; gap: 20px;
-  padding: clamp(18px, 2.4vw, 30px) var(--gut);
+  padding: clamp(18px, 2.4cqw, 30px) var(--gut);
 }
-.vsb-topbar img { height: clamp(36px, 3.6vw, 47px); width: auto; }
+.vsb-topbar img { height: clamp(36px, 3.6cqw, 47px); width: auto; }
 
 /* ==========================================================================
    11 · Página 1 — hero de dos columnas
@@ -395,16 +432,16 @@
 .vsb-hero {
   display: grid; align-items: center;
   grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: clamp(32px, 4.2vw, 64px);
+  gap: clamp(32px, 4.2cqw, 64px);
 }
-.vsb-hero-copy > * + * { margin-top: clamp(18px, 2vw, 26px); }
-.vsb-hero .vsb-display { margin-top: clamp(16px, 1.8vw, 24px); }
+.vsb-hero-copy > * + * { margin-top: clamp(18px, 2cqw, 26px); }
+.vsb-hero .vsb-display { margin-top: clamp(16px, 1.8cqw, 24px); }
 /* Aire entre el titular y el botón.
    El selector va a la clase directa a propósito: .vsb-cta-block es hijo de
    .vsb-box, no de .vsb-hero-copy, así que un `.vsb-hero-copy > .vsb-cta-block`
    no casa con nada y el margen se queda en 0 — que es como estaba, con los dos
    bloques pegados y solo la holgura de la caja de línea separándolos. */
-.vsb-cta-block { margin-top: clamp(28px, 3vw, 44px); }
+.vsb-cta-block { margin-top: clamp(28px, 3cqw, 44px); }
 
 
 /* --- Portada tipográfica, SIN USO -------------------------------------------
@@ -421,7 +458,7 @@
   border-radius: 6px 14px 14px 6px; overflow: hidden;
   background: var(--cream-050); color: var(--black);
   display: flex; flex-direction: column; justify-content: space-between;
-  padding: clamp(22px, 2.6vw, 34px);
+  padding: clamp(22px, 2.6cqw, 34px);
   box-shadow: var(--shadow-lift);
   transform: rotate(-2.2deg) rotateY(7deg);
   transition: transform .5s cubic-bezier(.22,.61,.36,1);
@@ -444,12 +481,12 @@
 .vsb-guia-top .vsb-star { width: 20px; height: 20px; color: var(--peri-900); }
 .vsb-guia-title {
   font-family: var(--font-editorial); font-weight: 500;
-  font-size: clamp(1.5rem, 1.05rem + 1.5vw, 2.1rem);
+  font-size: clamp(1.5rem, 1.05rem + 1.5cqw, 2.1rem);
   line-height: 1.08; letter-spacing: -0.015em;
 }
 .vsb-guia-year {
   display: block; font-family: var(--font); font-weight: 900;
-  font-size: clamp(2.6rem, 1.6rem + 3.4vw, 4rem);
+  font-size: clamp(2.6rem, 1.6rem + 3.4cqw, 4rem);
   line-height: .92; letter-spacing: -0.04em; margin-top: 6px;
   color: var(--peri-900);
 }
@@ -583,7 +620,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-modal {
   position: fixed; inset: 0; z-index: 9999;
   display: none; align-items: center; justify-content: center;
-  padding: clamp(16px, 4vw, 40px);
+  padding: clamp(16px, 4cqw, 40px);
 }
 .vsb-modal.is-open { display: flex; }
 .vsb-modal-veil {
@@ -594,10 +631,10 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 }
 .vsb-modal-panel {
   position: relative; width: 100%; max-width: 520px;
-  max-height: calc(100vh - 2 * clamp(16px, 4vw, 40px));
+  max-height: calc(100vh - 2 * clamp(16px, 4cqw, 40px));
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   border-radius: var(--r-box);
-  padding: clamp(28px, 4vw, 44px);
+  padding: clamp(28px, 4cqw, 44px);
   background: var(--cream-050);
   box-shadow: 0 30px 80px rgba(10,12,30,.42);
   animation: vsb-pop .26s cubic-bezier(.22,.61,.36,1) both;
@@ -638,9 +675,9 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
    ========================================================================== */
 .vsb-confirm-title { margin-top: 20px; }
 .vsb-confirm-lead  { margin: 20px auto 0; max-width: 56ch; }
-.vsb-video-block   { margin-top: clamp(38px, 5vw, 60px); }
-.vsb-video-title   { margin: 0 auto clamp(24px, 3vw, 34px); max-width: 30ch; }
-.vsb-video-note    { margin: clamp(22px, 2.6vw, 30px) auto 0; max-width: 62ch; }
+.vsb-video-block   { margin-top: clamp(38px, 5cqw, 60px); }
+.vsb-video-title   { margin: 0 auto clamp(24px, 3cqw, 34px); max-width: 30ch; }
+.vsb-video-note    { margin: clamp(22px, 2.6cqw, 30px) auto 0; max-width: 62ch; }
 
 /* ==========================================================================
    14b · Video
@@ -657,7 +694,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-video-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,18,40,.30), rgba(15,18,40,.62)); }
 .vsb-video-play {
   position: relative; display: grid; place-items: center; gap: 0;
-  width: clamp(70px, 8vw, 96px); aspect-ratio: 1; border-radius: var(--r-pill);
+  width: clamp(70px, 8cqw, 96px); aspect-ratio: 1; border-radius: var(--r-pill);
   background: var(--peri-500); color: var(--black);
   box-shadow: 0 10px 40px rgba(123,138,255,.5);
   transition: transform .2s ease;
@@ -674,9 +711,9 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* ==========================================================================
    15 · Credenciales (Página 2, bloque 3)
    ========================================================================== */
-.vsb-creds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 68px); align-items: center; }
+.vsb-creds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5cqw, 68px); align-items: center; }
 
-.vsb-founders { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6vw, 20px); }
+.vsb-founders { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6cqw, 20px); }
 /* Los dos retratos van sobre el MISMO telón claro, montado en el archivo por
    `tools/compose-founders.mjs` a partir de los PNG recortados. El telón claro
    es lo que los separa de la sección navy — que era el pedido del cliente.
@@ -710,9 +747,9 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-cred-list .vsb-star { width: 13px; height: 13px; margin-top: 7px; color: var(--peri-500); }
 
 /* Cita con el 97% — el único numeral hero de la página */
-.vsb-stat { margin-top: clamp(26px, 3vw, 36px); padding-top: clamp(24px, 3vw, 32px); border-top: var(--hair) solid var(--rule); }
+.vsb-stat { margin-top: clamp(26px, 3cqw, 36px); padding-top: clamp(24px, 3cqw, 32px); border-top: var(--hair) solid var(--rule); }
 .vsb-stat-num {
-  font-size: clamp(3.4rem, 2rem + 4.6vw, 5.6rem); font-weight: 900;
+  font-size: clamp(3.4rem, 2rem + 4.6cqw, 5.6rem); font-weight: 900;
   line-height: .88; letter-spacing: -0.045em; color: var(--peri-500);   /* 5.0:1 sobre navy-900 — la única superficie donde es legal */
 }
 .vsb-stat-quote {
@@ -723,13 +760,13 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* ==========================================================================
    16 · Preguntas frecuentes — acordeón, Cormorant itálica, filetes
    ========================================================================== */
-.vsb-faq { margin-top: clamp(28px, 3.4vw, 44px); border-top: var(--hair) solid var(--rule); }
+.vsb-faq { margin-top: clamp(28px, 3.4cqw, 44px); border-top: var(--hair) solid var(--rule); }
 .vsb-faq-item { border-bottom: var(--hair) solid var(--rule); }
 .vsb-faq-q {
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  width: 100%; padding: clamp(20px, 2.4vw, 28px) 4px; text-align: left;
+  width: 100%; padding: clamp(20px, 2.4cqw, 28px) 4px; text-align: left;
   font-family: var(--font-editorial); font-style: italic; font-weight: 500;
-  font-size: clamp(1.24rem, 1rem + 0.8vw, 1.72rem);
+  font-size: clamp(1.24rem, 1rem + 0.8cqw, 1.72rem);
   line-height: 1.25; letter-spacing: -0.005em;
   transition: color .16s ease;
 }
@@ -739,7 +776,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s cubic-bezier(.22,.61,.36,1); }
 .vsb-faq-item.is-open .vsb-faq-a { grid-template-rows: 1fr; }
 .vsb-faq-a > div { overflow: hidden; }
-.vsb-faq-a p { padding: 0 4px clamp(22px, 2.6vw, 30px); max-width: 62ch; color: var(--ink-muted); }
+.vsb-faq-a p { padding: 0 4px clamp(22px, 2.6cqw, 30px); max-width: 62ch; color: var(--ink-muted); }
 
 /* Fallback: sin :has() ni animación de grid, el contenido sigue accesible. */
 @supports not (grid-template-rows: 1fr) {
@@ -750,12 +787,12 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* ==========================================================================
    17 · Cierre
    ========================================================================== */
-.vsb-close-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: clamp(26px, 3vw, 34px); }
+.vsb-close-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: clamp(26px, 3cqw, 34px); }
 
 /* ==========================================================================
    18 · Footer legal (idéntico en las dos páginas)
    ========================================================================== */
-.vsb-footer { padding: clamp(40px, 5vw, 64px) var(--gut) clamp(32px, 4vw, 44px); }
+.vsb-footer { padding: clamp(40px, 5cqw, 64px) var(--gut) clamp(32px, 4cqw, 44px); }
 .vsb-footer-top {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: 22px; padding-bottom: 26px; border-bottom: var(--hair) solid rgba(255,255,255,.14);
@@ -786,8 +823,8 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* ==========================================================================
    20 · Responsive
    ========================================================================== */
-@media (max-width: 980px) {
-  .vsb-hero { grid-template-columns: 1fr; gap: clamp(28px, 5vw, 44px); }
+@container vsb (max-width: 980px) {
+  .vsb-hero { grid-template-columns: 1fr; gap: clamp(28px, 5cqw, 44px); }
   .vsb-hero-visual { order: -1; }              /* la portada primero en móvil */
   .vsb-guia { width: min(72%, 300px); }        /* portada tipográfica (sin uso) */
   /* En una columna angosta la rotación fuerte se ve forzada, y además el 3D
@@ -798,9 +835,9 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   .vsb-measure, .vsb-measure-wide { max-width: none; }
 }
 
-@media (max-width: 640px) {
+@container vsb (max-width: 640px) {
   /* El titular a 35px partía en siete líneas dentro de la caja. */
-  .vsb { --t-display: clamp(1.75rem, 1.00rem + 3.6vw, 2.30rem); }
+  .vsb { --t-display: clamp(1.75rem, 1.00rem + 3.6cqw, 2.30rem); }
   .vsb-topbar { padding-bottom: 6px; }
   .vsb-topbar .vsb-micro { display: none; }
   /* Tipo y tracking más chicos para que la etiqueta del botón quepa en una
@@ -841,9 +878,13 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   .vsb-footer-links { justify-content: center; }
 }
 
-/* En pantallas muy cortas la landing deja de forzar el "sin scroll". */
-@media (min-width: 981px) and (min-height: 760px) {
-  .vsb-hero-section { min-height: calc(100vh - 96px); display: grid; align-items: center; }
+/* En pantallas muy cortas la landing deja de forzar el "sin scroll".
+   Mezcla a propósito: el ALTO lo sabe @media, el ANCHO lo sabe @container.
+   `100vh` se queda en vh — aquí sí queremos el alto de la ventana. */
+@media (min-height: 760px) {
+  @container vsb (min-width: 981px) {
+    .vsb-hero-section { min-height: calc(100vh - 96px); display: grid; align-items: center; }
+  }
 }
 
 @media print { .vsb-modal, .vsb-form-slab, .vsb-form-line { display: none !important; } }
