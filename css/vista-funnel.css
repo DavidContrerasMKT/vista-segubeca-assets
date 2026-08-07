@@ -1,4 +1,4 @@
-?/* ==========================================================================
+/* ==========================================================================
    VISTA CONSULTING — Funnel Segubeca
    Hoja de estilo única para Página 1 (landing) y Página 2 (thank-you).
 
@@ -55,13 +55,13 @@
   --font-editorial: 'Cormorant Garamond', Georgia, serif;
 
   /* Escala fluida — mismos roles que DESIGN.md §3 */
-  --t-display:   clamp(2.20rem, 1.15rem + 2.95cqw, 3.70rem);
-  --t-statement: clamp(1.75rem, 1.05rem + 2.00cqw, 2.88rem);
-  --t-headline:  clamp(1.50rem, 1.10rem + 1.15cqw, 2.15rem);
-  --t-lead:      clamp(1.06rem, 0.98rem + 0.25cqw, 1.25rem);
-  --t-body:      clamp(1.00rem, 0.95rem + 0.16cqw, 1.09rem);
-  --t-small:     0.94rem;
-  --t-micro:     0.80rem;
+  --t-display:   clamp(35.2px, 18.4px + 2.95cqw, 59.2px);
+  --t-statement: clamp(28px, 16.8px + 2.00cqw, 46.08px);
+  --t-headline:  clamp(24px, 17.6px + 1.15cqw, 34.4px);
+  --t-lead:      clamp(16.96px, 15.68px + 0.25cqw, 20px);
+  --t-body:      clamp(16px, 15.2px + 0.16cqw, 17.44px);
+  --t-small:     15.04px;
+  --t-micro:     12.8px;
 
   --lh-tight: 1.06;
   --lh-head:  1.16;
@@ -153,7 +153,16 @@ body:has(> .vsb) { margin: 0; }
 
   margin: 0;
   font-family: var(--font);
-  font-size: var(--t-body);
+  /* OJO: aquí NO puede ir var(--t-body).
+     `--t-body` lleva `cqw`, y este mismo elemento es el contenedor de consulta.
+     Un elemento no se puede consultar a sí mismo, así que la declaración queda
+     inválida en tiempo de cómputo y `font-size` cae a lo HEREDADO — que dentro
+     de ClickFunnels es la raíz de 24px. Todo el cuerpo de texto del bloque se
+     iba a 24px sin que nada lo delatara.
+     Un px fijo lo resuelve: el rango de --t-body era 16→17.44px de todos modos,
+     1.44px de diferencia que nadie ve. Los descendientes SÍ pueden usar
+     var(--t-body) sin problema, porque para ellos .vsb sí es un contenedor. */
+  font-size: 17px;
   line-height: var(--lh-body);
   color: var(--black);
   background: var(--cream-200);
@@ -256,6 +265,16 @@ body:has(> .vsb) { margin: 0; }
 .vsb-lead { font-size: var(--t-lead); line-height: 1.5; }
 .vsb-small { font-size: var(--t-small); }
 
+/* Red de seguridad: ClickFunnels se comió el espacio entre dos <span>
+   consecutivos del titular y quedaba "de tu hijo,pase lo que pase". El
+   espacio existe en el HTML fuente, pero el editor de CF colapsa el salto de
+   línea entre etiquetas adyacentes. Reponerlo por CSS lo arregla en la página
+   ya publicada sin volver a pegar el bloque.
+   Es un espacio normal, no un &nbsp;, para que siga habiendo oportunidad de
+   corte de línea justo ahí. */
+.vsb-display .vsb-keep + .vsb-alt::before,
+.vsb-display .vsb-alt + .vsb-keep::before { content: " "; }
+
 /* Devices en línea — §5b. Un fragmento por titular, no más. */
 .vsb-alt { font-style: italic; font-weight: 400; }            /* romana + itálica en una línea */
 .vsb-ink { color: var(--ink-accent); }        /* acento a tamano de texto; la superficie decide el tono */
@@ -323,7 +342,7 @@ body:has(> .vsb) { margin: 0; }
 .vsb-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 12px;
   padding: 20px 34px; border-radius: var(--r-pill);
-  font-size: clamp(0.94rem, 0.88rem + 0.2cqw, 1.06rem);
+  font-size: clamp(15.04px, 14.08px + 0.2cqw, 16.96px);
   font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
   text-align: center; line-height: 1.1;
   background: var(--btn-fill); color: var(--btn-ink);
@@ -488,21 +507,21 @@ body:has(> .vsb) { margin: 0; }
 }
 .vsb-guia > * { position: relative; z-index: 1; }
 .vsb-guia-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.vsb-guia-top .vsb-micro { font-size: 0.62rem; letter-spacing: 0.14em; }
+.vsb-guia-top .vsb-micro { font-size: 9.92px; letter-spacing: 0.14em; }
 .vsb-guia-top .vsb-star { width: 20px; height: 20px; color: var(--peri-900); }
 .vsb-guia-title {
   font-family: var(--font-editorial); font-weight: 500;
-  font-size: clamp(1.5rem, 1.05rem + 1.5cqw, 2.1rem);
+  font-size: clamp(24px, 16.8px + 1.5cqw, 33.6px);
   line-height: 1.08; letter-spacing: -0.015em;
 }
 .vsb-guia-year {
   display: block; font-family: var(--font); font-weight: 900;
-  font-size: clamp(2.6rem, 1.6rem + 3.4cqw, 4rem);
+  font-size: clamp(41.6px, 25.6px + 3.4cqw, 64px);
   line-height: .92; letter-spacing: -0.04em; margin-top: 6px;
   color: var(--peri-900);
 }
 .vsb-guia-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-.vsb-guia-foot .vsb-micro { font-size: 0.60rem; letter-spacing: 0.14em; }
+.vsb-guia-foot .vsb-micro { font-size: 9.6px; letter-spacing: 0.14em; }
 /* --- Portada real, plana, con la perspectiva puesta por CSS ---------------
    La imagen viene de frente y sin sombra, así que el volumen se arma aquí:
    una rotación en Y de verdad (no un skew), el canto de las hojas como cara
@@ -576,7 +595,7 @@ body:has(> .vsb) { margin: 0; }
   padding: 17px 20px; border-radius: var(--r-box-sm);
   border: var(--hair) solid rgba(27,33,80,.14);
   background: var(--white); color: var(--black);
-  font-size: 1.02rem; line-height: 1.3;
+  font-size: 16.32px; line-height: 1.3;
   transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
   -webkit-appearance: none; appearance: none;
 }
@@ -614,7 +633,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   border: var(--hair) solid rgba(27,33,80,.14); border-right: 0;
   border-radius: var(--r-box-sm) 0 0 var(--r-box-sm);
   background: var(--grey-050); color: var(--slate-500);
-  font-size: 1.02rem; font-weight: 500; white-space: nowrap;
+  font-size: 16.32px; font-weight: 500; white-space: nowrap;
 }
 .vsb-input-group .vsb-input { border-radius: 0 var(--r-box-sm) var(--r-box-sm) 0; }
 
@@ -760,7 +779,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* Cita con el 97% — el único numeral hero de la página */
 .vsb-stat { margin-top: clamp(26px, 3cqw, 36px); padding-top: clamp(24px, 3cqw, 32px); border-top: var(--hair) solid var(--rule); }
 .vsb-stat-num {
-  font-size: clamp(3.4rem, 2rem + 4.6cqw, 5.6rem); font-weight: 900;
+  font-size: clamp(54.4px, 32px + 4.6cqw, 89.6px); font-weight: 900;
   line-height: .88; letter-spacing: -0.045em; color: var(--peri-500);   /* 5.0:1 sobre navy-900 — la única superficie donde es legal */
 }
 .vsb-stat-quote {
@@ -777,7 +796,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   width: 100%; padding: clamp(20px, 2.4cqw, 28px) 4px; text-align: left;
   font-family: var(--font-editorial); font-style: italic; font-weight: 500;
-  font-size: clamp(1.24rem, 1rem + 0.8cqw, 1.72rem);
+  font-size: clamp(19.84px, 16px + 0.8cqw, 27.52px);
   line-height: 1.25; letter-spacing: -0.005em;
   transition: color .16s ease;
 }
@@ -848,7 +867,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 
 @container vsb (max-width: 640px) {
   /* El titular a 35px partía en siete líneas dentro de la caja. */
-  .vsb { --t-display: clamp(1.75rem, 1.00rem + 3.6cqw, 2.30rem); }
+  .vsb { --t-display: clamp(28px, 16px + 3.6cqw, 36.8px); }
   .vsb-topbar { padding-bottom: 6px; }
   .vsb-topbar .vsb-micro { display: none; }
   /* Tipo y tracking más chicos para que la etiqueta del botón quepa en una
@@ -867,9 +886,9 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
      sigue respirando igual que antes.                                       */
   .vsb-section.vsb-confirm-section { padding-top: 18px; padding-bottom: 30px; }
   .vsb-confirm-title { margin-top: 12px; }
-  .vsb-confirm-lead  { margin-top: 12px; font-size: 0.97rem; line-height: 1.42; }
+  .vsb-confirm-lead  { margin-top: 12px; font-size: 15.52px; line-height: 1.42; }
   .vsb-video-block   { margin-top: 18px; }
-  .vsb-video-title   { margin-bottom: 14px; font-size: 1.42rem; }
+  .vsb-video-title   { margin-bottom: 14px; font-size: 22.72px; }
   .vsb-video-note    { margin-top: 18px; }
 
   /* La pastilla "Registro confirmado" se oculta SOLO en móvil: el propio
@@ -878,7 +897,7 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
      Para recuperarla, borra esta regla — el video vuelve a cortarse en el SE. */
   .vsb-confirm-badge { display: none; }
 
-  .vsb-btn { padding: 17px 20px; width: 100%; font-size: 0.82rem; letter-spacing: 0.04em; gap: 9px; }
+  .vsb-btn { padding: 17px 20px; width: 100%; font-size: 13.12px; letter-spacing: 0.04em; gap: 9px; }
   .vsb-btn-note { text-align: center; }
   .vsb-founders { gap: 10px; }
   .vsb-form-slab { opacity: .09; }
