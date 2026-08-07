@@ -1,0 +1,251 @@
+/* ==========================================================================
+   VISTA CONSULTING · Funnel Segubeca
+   SKIN PARA EL FORMULARIO NATIVO DE CLICKFUNNELS
+
+   Para qué es
+   -----------
+   Si pegas mi HTML tal cual, el formulario es HTML plano y ClickFunnels NO
+   captura el lead: no hay contacto, no hay automatización, no hay nada.
+   La solución es usar el elemento de FORMULARIO NATIVO de ClickFunnels —que sí
+   guarda el contacto— y vestirlo con este CSS para que se vea igual que el
+   diseño. Los campos son de CF; la apariencia es de Vista.
+
+   Cómo se usa
+   -----------
+   1. En ClickFunnels, selecciona el elemento de Formulario.
+   2. En sus ajustes, busca "CSS ID" (a veces bajo Advanced / Avanzado) y
+      escribe:   vista-form
+   3. Pega este archivo al final del bloque de CSS del paso 1 de la guía.
+
+   Si algo no toma el estilo
+   -------------------------
+   ClickFunnels cambia sus nombres de clase de vez en cuando, así que aquí
+   apunto a las clases de CF *y además* a los elementos genéricos (input,
+   select, button). Con eso funciona aunque cambien las clases. Si aun así un
+   campo se resiste: clic derecho sobre él → Inspeccionar → copia el nombre de
+   clase real y agrégalo a la lista de selectores correspondiente aquí abajo.
+
+   El !important es a propósito: ClickFunnels inyecta estilos en línea con
+   mucha prioridad y sin esto no hay manera de ganarle.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0 · La tarjeta que contiene el formulario
+   Ponle a la FILA o COLUMNA que envuelve el formulario el CSS ID `vista-card`
+   para que se vea como el cuadro crema del diseño.
+   -------------------------------------------------------------------------- */
+#vista-card {
+  background: #F6F1E7 !important;
+  border: 0 !important;
+  border-radius: 24px !important;
+  padding: clamp(28px, 3.4vw, 56px) !important;
+  box-shadow: 0 2px 4px rgba(27,33,80,.04), 0 12px 32px rgba(27,33,80,.07) !important;
+}
+
+/* --------------------------------------------------------------------------
+   1 · Contenedor del formulario
+   -------------------------------------------------------------------------- */
+#vista-form,
+#vista-form * {
+  font-family: 'Brandon Grotesque', 'Futura', 'Century Gothic', sans-serif !important;
+  box-sizing: border-box !important;
+}
+
+/* Separación entre campos. CF nombra el contenedor de cada campo de varias
+   formas según la versión; van todas. */
+#vista-form .elFormItemWrapper,
+#vista-form .elFormItem,
+#vista-form .inputHolder,
+#vista-form .elInputWrapper {
+  margin-bottom: 18px !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   2 · Etiquetas — FUERA del campo, como en la referencia que mandaste
+   En ClickFunnels los campos traen el texto DENTRO como placeholder. Para que
+   la etiqueta salga arriba tienes que activar, en los ajustes del campo, la
+   opción de mostrar etiqueta ("Show Label" / "Etiqueta"). Si tu plan no la
+   trae, ver la nota al final de este archivo.
+   -------------------------------------------------------------------------- */
+#vista-form label,
+#vista-form .elLabel,
+#vista-form .elFormLabel {
+  display: block !important;
+  margin: 0 0 8px 0 !important;
+  font-size: 0.94rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: #000000 !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* --------------------------------------------------------------------------
+   3 · Campos
+   -------------------------------------------------------------------------- */
+#vista-form input[type="text"],
+#vista-form input[type="email"],
+#vista-form input[type="tel"],
+#vista-form input[type="number"],
+#vista-form select,
+#vista-form textarea,
+#vista-form .elInput,
+#vista-form input.elFormInput {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 17px 20px !important;
+  border: 1px solid rgba(27,33,80,.14) !important;
+  border-radius: 14px !important;
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  font-size: 1.02rem !important;
+  line-height: 1.3 !important;
+  box-shadow: none !important;
+  transition: border-color .16s ease, box-shadow .16s ease !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* El ejemplo dentro del campo, en tono claro */
+#vista-form ::placeholder { color: #A9AEBC !important; opacity: 1 !important; }
+
+#vista-form input:hover,
+#vista-form select:hover,
+#vista-form textarea:hover { border-color: rgba(27,33,80,.26) !important; }
+
+#vista-form input:focus,
+#vista-form select:focus,
+#vista-form textarea:focus {
+  outline: none !important;
+  border-color: #7B8AFF !important;
+  box-shadow: 0 0 0 4px rgba(123,138,255,.24) !important;
+}
+
+/* Flecha propia para los desplegables */
+#vista-form select {
+  padding-right: 46px !important;
+  cursor: pointer !important;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="9" viewBox="0 0 14 9"><path d="M1 1l6 6 6-6" fill="none" stroke="%235B6478" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>') !important;
+  background-repeat: no-repeat !important;
+  background-position: right 20px center !important;
+}
+
+/* CF a veces envuelve el input en una caja con su propio borde: la apagamos
+   para no terminar con dos bordes, uno dentro del otro. */
+#vista-form .inputHolder,
+#vista-form .elFormInputWrapper {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   4 · Botón de envío
+   Relleno periwinkle con texto NEGRO. No es un descuido: blanco sobre
+   #7B8AFF da 3.0:1 y reprueba accesibilidad; negro da 6.9:1.
+   Está en DESIGN.md §2 como la regla más importante del sistema.
+   -------------------------------------------------------------------------- */
+#vista-form button[type="submit"],
+#vista-form .elButton,
+#vista-form input[type="submit"],
+#vista-button .elButton,
+#vista-button a {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: 26px !important;
+  padding: 20px 34px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #7B8AFF !important;
+  background-image: none !important;
+  color: #000000 !important;
+  font-size: 1.06rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1.1 !important;
+  box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(123,138,255,.34) !important;
+  transition: transform .18s ease, background-color .18s ease !important;
+}
+#vista-form .elButtonText,
+#vista-button .elButtonText {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+#vista-form button[type="submit"]:hover,
+#vista-form .elButton:hover,
+#vista-button .elButton:hover {
+  background: #A6B3FF !important;
+  transform: translateY(-2px) !important;
+}
+/* CF mete un sub-texto bajo la etiqueta del botón; casi siempre estorba. */
+#vista-form .elButtonSub,
+#vista-button .elButtonSub { display: none !important; }
+
+/* --------------------------------------------------------------------------
+   5 · Mensajes de error de CF
+   -------------------------------------------------------------------------- */
+#vista-form .elFormItemError,
+#vista-form .error,
+#vista-form .elError {
+  margin-top: 7px !important;
+  font-size: 0.94rem !important;
+  font-weight: 500 !important;
+  color: #B3261E !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+#vista-form input.error,
+#vista-form .hasError input,
+#vista-form .hasError select {
+  border-color: #B3261E !important;
+  box-shadow: 0 0 0 4px rgba(179,38,30,.14) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6 · Popup nativo de ClickFunnels (si usas el formulario dentro de un popup)
+   Ponle al popup el CSS ID `vista-popup`.
+   -------------------------------------------------------------------------- */
+#vista-popup .modal-content,
+#vista-popup .elModal,
+#vista-popup > div {
+  border: 0 !important;
+  border-radius: 24px !important;
+  background: #F6F1E7 !important;
+  box-shadow: 0 30px 80px rgba(10,12,30,.42) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7 · Quitar la marca de ClickFunnels del pie
+   El documento pide reemplazar "Powered by ClickFunnels" por el logo de Vista.
+   En planes donde el badge no se puede apagar desde los ajustes, esto lo
+   oculta. Revisa que tu plan lo permita antes de publicar.
+   -------------------------------------------------------------------------- */
+.cf-badge,
+#cf-badge,
+a[href*="clickfunnels.com"][target="_blank"].badge,
+.powered-by-clickfunnels { display: none !important; }
+
+/* ==========================================================================
+   NOTA · Si tu plan de ClickFunnels no deja poner la etiqueta arriba del campo
+
+   Truco sin editar el HTML de CF: escribe la etiqueta en el placeholder del
+   campo (p. ej. "Nombre") y descomenta el bloque de abajo. Genera la etiqueta
+   con CSS a partir del atributo placeholder, y deja el ejemplo dentro en gris.
+   Es una solución de segunda: el lector de pantalla no la anuncia como
+   etiqueta real. Úsala solo si no queda de otra.
+
+   #vista-form .elFormItemWrapper { position: relative; padding-top: 30px !important; }
+   #vista-form input::before { content: attr(placeholder); }
+   ========================================================================== */
