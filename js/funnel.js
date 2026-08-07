@@ -175,7 +175,7 @@
     if (!form.getAttribute('action')) {
       e.preventDefault();
       if (btn) btn.classList.remove('is-loading');
-      console.warn('[Vista] El formulario no tiene `action`. Conéctalo a ClickFunnels o a tu endpoint — ver clickfunnels/GUIA-CLICKFUNNELS.md');
+      console.warn('[Vista] El formulario no tiene `action`. Conéctalo a ClickFunnels o a tu endpoint — ver clickfunnels/CLICKFUNNELS-GUIDE.md');
       var url = form.getAttribute('data-vsb-next');
       if (url) {
         var q = nameField ? '?nombre=' + encodeURIComponent(nameField.value.trim().split(/\s+/)[0]) : '';
