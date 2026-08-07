@@ -130,6 +130,50 @@
    submit — se veía como si la validación estuviera rota. */
 body:has(> .vsb) { margin: 0; }
 
+/* ==========================================================================
+   Sangrado completo dentro de ClickFunnels
+
+   El diseño son bandas de color a todo lo ancho: arena, navy, índigo, negro.
+   Pegado en CF eso no pasaba: la **Row** limita a 1170px, y con los paddings de
+   `.container`, `.row`, la columna y `.col-inner` el bloque acababa en 1108px
+   dentro de una ventana de 1900. Quedaban 396px de página desnuda a cada lado y
+   el diseño se veía recortado por los costados. Medido en la página real:
+
+     .container fullContainer  1900px   <- ya venía a todo lo ancho
+     .containerInnerV2         1870px
+     .row                      1170px   <- aquí se pierde el ancho
+     .col-md-12 innerContent   1140px
+     .col-inner                1108px   (16px de margen a cada lado)
+
+   Estas reglas son la ÚNICA parte del archivo que toca clases ajenas a .vsb, y
+   van todas con `:has(.vsb)` para que solo apliquen a la Row que contiene el
+   bloque. El resto de la página de CF no se entera.
+
+   Se resolvió por CSS y no con `width:100vw` a propósito: `100vw` incluye el
+   ancho de la barra de scroll, así que habría aparecido un scroll horizontal de
+   ~15px. Anular los contenedores no tiene ese problema — comprobado: sangra a
+   1900px exactos y sin scroll horizontal.
+
+   Si algún día CF cambia estos nombres de clase, el síntoma vuelve a ser el
+   mismo: bandas angostas con página a los lados. La alternativa nativa es poner
+   la Row en ancho completo desde el editor y quitarle los paddings a mano.     */
+.container:has(.vsb) { padding-left: 0 !important; padding-right: 0 !important; }
+.containerInnerV2:has(.vsb) {
+  width: 100% !important; max-width: none !important;
+  margin-left: 0 !important; margin-right: 0 !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+.row:has(.vsb) {
+  width: 100% !important; max-width: none !important;
+  margin-left: 0 !important; margin-right: 0 !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+.row:has(.vsb) > [class*="col-"] {
+  width: 100% !important; max-width: none !important; flex-basis: 100% !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+.col-inner:has(.vsb) { margin-left: 0 !important; margin-right: 0 !important; }
+
 .vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
 .vsb {
   /* ---- Contenedor de consulta — esto es lo que hace que el bloque funcione
