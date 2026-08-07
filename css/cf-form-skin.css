@@ -40,13 +40,29 @@
    se lea como una continuación del hero y no como un bloque pegado aparte.
    -------------------------------------------------------------------------- */
 #vista-form-section {
-  background: #EAE1D0 !important;
-  padding: 8px 20px 64px !important;
+  box-sizing: border-box !important;
+  /* A todo lo ancho, igual que las bandas del bloque HTML. La Row de CF viene
+     con 1170px; sin esto la franja arena se corta y queda blanco a un lado. */
+  width: 100% !important;
+  max-width: none !important;
   margin: 0 !important;
+  background: #EAE1D0 !important;
+  padding: 8px 16px 56px !important;
+  overflow-x: clip !important;   /* red de seguridad contra scroll horizontal */
 }
-#vista-form-section > *,
-#vista-form-section .row,
-#vista-form-section [class*="col-"] {
+/* Las columnas de esa Row tampoco deben limitar el ancho. */
+#vista-form-section > [class*="col-"],
+#vista-form-section .col-inner:not(#vista-card) {
+  width: 100% !important; max-width: none !important; flex-basis: 100% !important;
+  margin-left: 0 !important; margin-right: 0 !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+/* Fondo transparente a los envoltorios de CF para que se vea el arena de la
+   fila — PERO no a la tarjeta. `.col-inner` casa con [class*="col-"], así que
+   sin el :not() esta regla le borraba el crema a #vista-card. */
+#vista-form-section > *:not(#vista-card),
+#vista-form-section .row:not(#vista-card),
+#vista-form-section [class*="col-"]:not(#vista-card) {
   background: transparent !important;
 }
 
@@ -69,6 +85,7 @@
    para que se vea como el cuadro crema del diseño.
    -------------------------------------------------------------------------- */
 #vista-card {
+  box-sizing: border-box !important;   /* si no, 620 + 56*2 de padding = 732 */
   max-width: 620px !important;
   margin-left: auto !important;
   margin-right: auto !important;
