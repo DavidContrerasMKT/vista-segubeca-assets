@@ -156,23 +156,33 @@ body:has(> .vsb) { margin: 0; }
 
    Si algún día CF cambia estos nombres de clase, el síntoma vuelve a ser el
    mismo: bandas angostas con página a los lados. La alternativa nativa es poner
-   la Row en ancho completo desde el editor y quitarle los paddings a mano.     */
-.container:has(.vsb) { padding-left: 0 !important; padding-right: 0 !important; }
+   la Row en ancho completo desde el editor y quitarle los paddings a mano.
+
+   Y también en VERTICAL. Arriba del bloque quedaban 55px de blanco y abajo del
+   footer otros 40px, repartidos así:
+
+     .container fullContainer   padding-top/bottom  20px
+     .row                       padding-top/bottom  20px
+     .elCustomHtmlJs            margin-top          15px
+
+   Son los espaciados con los que CF separa sus elementos entre sí. Para un
+   bloque que ES la página completa, sobran: el diseño arranca con su propia
+   franja de marca y cierra con el footer negro.                              */
+.container:has(.vsb) { padding: 0 !important; }
 .containerInnerV2:has(.vsb) {
   width: 100% !important; max-width: none !important;
-  margin-left: 0 !important; margin-right: 0 !important;
-  padding-left: 0 !important; padding-right: 0 !important;
+  margin: 0 !important; padding: 0 !important;
 }
 .row:has(.vsb) {
   width: 100% !important; max-width: none !important;
-  margin-left: 0 !important; margin-right: 0 !important;
-  padding-left: 0 !important; padding-right: 0 !important;
+  margin: 0 !important; padding: 0 !important;
 }
 .row:has(.vsb) > [class*="col-"] {
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
-  padding-left: 0 !important; padding-right: 0 !important;
+  padding: 0 !important;
 }
-.col-inner:has(.vsb) { margin-left: 0 !important; margin-right: 0 !important; }
+.col-inner:has(.vsb) { margin: 0 !important; }
+.elCustomHtmlJs:has(.vsb) { margin-top: 0 !important; margin-bottom: 0 !important; }
 
 .vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
 .vsb {
