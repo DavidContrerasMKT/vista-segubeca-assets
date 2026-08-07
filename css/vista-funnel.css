@@ -262,7 +262,18 @@ body:has(> .vsb) { margin: 0; }
 .vsb-nowrap { white-space: nowrap; }
 /* Mantiene un grupo de palabras junto, pero solo donde hay ancho para ello:
    en móvil un nowrap obliga al navegador a desbordar en lugar de partir. */
-@container vsb (min-width: 641px) { .vsb-keep { white-space: nowrap; } }
+/* Umbral 1200px, no 641px. Medido en la página real: con un contenedor de
+   1108px la medida útil dentro de la caja es 578px y el fragmento más largo
+   —"incluso si llegaras a faltar."— ocupa 577px con nowrap. Entraba por UN
+   píxel; cualquier ventana un poco más angosta lo desbordaba y el contenedor de
+   ClickFunnels lo recortaba a media palabra.
+
+   La medida crece a ~0.52× el ancho del contenedor, así que por debajo de
+   ~1135px el fragmento no cabe. A 1200px hay holgura real; por debajo se deja
+   que el texto corte solo, que es infinitamente mejor que perderlo.
+
+   Regla general: un nowrap cosmético nunca vale un texto cortado. */
+@container vsb (min-width: 1200px) { .vsb-keep { white-space: nowrap; } }
 
 /* Medida de lectura: el cuerpo nunca corre a todo lo ancho. */
 .vsb-measure { max-width: 46ch; }
