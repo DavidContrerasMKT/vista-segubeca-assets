@@ -1,0 +1,849 @@
+/* ==========================================================================
+   VISTA CONSULTING — Funnel Segubeca
+   Hoja de estilo única para Página 1 (landing) y Página 2 (thank-you).
+
+   Fuente de verdad de marca: vista-design-system/DESIGN.md
+   Todo va namespaced bajo `.vsb` para sobrevivir el CSS propio de
+   ClickFunnels. No quites el wrapper `<div class="vsb">`.
+
+   Extensiones web documentadas respecto a DESIGN.md:
+   · Escala tipográfica: DESIGN.md fija px contra una tarjeta de 1080px.
+     Aquí se deriva una escala fluida con clamp() manteniendo los ROLES
+     (display / statement / headline / lead / body / small / micro).
+   · Radio de caja: 16px en tarjeta de 1080px ≡ 24px a escala web (--r-box).
+   · Las parejas de contraste de §2 se respetan sin excepción.
+   ========================================================================== */
+
+/* ---- Brandon Grotesque — la voz de marca -------------------------------- */
+@font-face { font-family: 'Brandon Grotesque'; src: url('../fonts/BrandonGrotesque-Light.otf')   format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Brandon Grotesque'; src: url('../fonts/BrandonGrotesque-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Brandon Grotesque'; src: url('../fonts/BrandonGrotesque-Medium.otf')  format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Brandon Grotesque'; src: url('../fonts/BrandonGrotesque-Bold.otf')    format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Brandon Grotesque'; src: url('../fonts/BrandonGrotesque-Black.otf')   format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+
+/* ---- Cormorant Garamond — titular editorial + preguntas frecuentes ----- */
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-400-italic-latin.woff2')     format('woff2'); font-weight: 400; font-style: italic; font-display: swap; unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-400-italic-latin-ext.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-500-italic-latin.woff2')     format('woff2'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-400-normal-latin.woff2')     format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-500-normal-latin.woff2')     format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('../fonts/cormorant-garamond-600-normal-latin.woff2')     format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+
+/* ==========================================================================
+   1 · Tokens
+   ========================================================================== */
+.vsb {
+  /* Rampa de marca — Vista Brandboard (Pantone 7452 C) */
+  --peri-100: #A6B3FF;
+  --peri-500: #7B8AFF;
+  --peri-600: #6272D3;
+  --peri-900: #2934A4;
+
+  --white:    #FFFFFF;
+  --grey-050: #F7F7F7;
+  --grey-200: #DDDDDD;
+  --black:    #000000;
+
+  --cream-050: #F6F1E7;
+  --cream-200: #EAE1D0;
+  --navy-900:  #1B2150;
+  --navy-700:  #2A3551;
+  --slate-500: #5B6478;
+
+  /* Tipografía */
+  --font:           'Brandon Grotesque', 'Futura', 'Century Gothic', sans-serif;
+  --font-editorial: 'Cormorant Garamond', Georgia, serif;
+
+  /* Escala fluida — mismos roles que DESIGN.md §3 */
+  --t-display:   clamp(2.20rem, 1.15rem + 2.95vw, 3.70rem);
+  --t-statement: clamp(1.75rem, 1.05rem + 2.00vw, 2.88rem);
+  --t-headline:  clamp(1.50rem, 1.10rem + 1.15vw, 2.15rem);
+  --t-lead:      clamp(1.06rem, 0.98rem + 0.25vw, 1.25rem);
+  --t-body:      clamp(1.00rem, 0.95rem + 0.16vw, 1.09rem);
+  --t-small:     0.94rem;
+  --t-micro:     0.80rem;
+
+  --lh-tight: 1.06;
+  --lh-head:  1.16;
+  --lh-body:  1.55;
+  --tr-micro: 0.12em;
+
+  /* Geometría */
+  --r-box:   24px;   /* ≡ 16px de DESIGN.md §4 reescalado a web */
+  --r-box-sm: 14px;
+  --r-pill:  999px;
+  --hair:    1px;
+  --shell:   1240px; /* ancho máximo de contenido */
+  --gut:     clamp(20px, 4vw, 56px);
+
+  /* Sombra: muy contenida. La marca es plana; esto solo separa planos. */
+  --shadow-soft: 0 2px 4px rgba(27,33,80,.04), 0 12px 32px rgba(27,33,80,.07);
+  --shadow-lift: 0 4px 8px rgba(27,33,80,.06), 0 24px 60px rgba(27,33,80,.12);
+
+  /* Tintas por defecto — las sobreescribe cada superficie (§3). Existen para
+     que un componente suelto, fuera de cualquier .vsb-s-*, siga siendo legible. */
+  --ink:        var(--black);
+  --ink-muted:  var(--slate-500);
+  --ink-accent: var(--peri-900);
+  --rule:       rgba(27, 33, 80, .16);
+  --error:      #B3261E;
+  --surface:    var(--white);
+
+  /* ---- Botón principal ------------------------------------------------
+     Texto BLANCO sobre periwinkle, por decisión del cliente (agosto 2026).
+
+     Va contra la regla que DESIGN.md marca como la más importante del
+     sistema, y conviene saber el número: blanco sobre `--peri-500` da
+     **3.0:1**. AA pide 4.5:1 para texto normal y 3.0:1 para texto grande
+     (≥18.66px en negrita). La etiqueta del botón corre a 15–17px, así que
+     no alcanza ninguno de los dos umbrales. Con negro daba 6.9:1.
+
+     PARA QUE EL BLANCO SEA LEGAL, sin perder el morado, cambia una línea:
+         --btn-fill: var(--peri-900);   →  blanco a 9.9:1
+     Queda un morado más profundo (#2934A4) en lugar del periwinkle claro.
+     Es la única forma de tener letras blancas y cumplir contraste.        */
+  --btn-fill:       var(--peri-500);
+  --btn-ink:        var(--white);
+  --btn-fill-hover: var(--peri-600);
+}
+
+/* ==========================================================================
+   2 · Reset acotado al scope
+
+   Todo el reset de elementos va dentro de :where(), que aporta CERO
+   especificidad. Así cualquier clase .vsb-* le gana siempre, sin importar el
+   orden del archivo. No es cosmético: con `.vsb button { background: none }`
+   (0-1-1) el relleno periwinkle de `.vsb-btn` (0-1-0) perdía, y el botón
+   salía crema sobre crema; y con `.vsb input { color: inherit }` los campos
+   de la sección índigo heredaban texto blanco sobre fondo blanco.
+   ========================================================================== */
+.vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
+.vsb {
+  margin: 0;
+  font-family: var(--font);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  color: var(--black);
+  background: var(--cream-200);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:where(.vsb) :where(h1, h2, h3, h4, p, ul, ol, figure, figcaption, dl, dd) { margin: 0; padding: 0; }
+:where(.vsb) :where(ul, ol) { list-style: none; }
+:where(.vsb) :where(img, svg, iframe) { display: block; max-width: 100%; }
+:where(.vsb) :where(img) { height: auto; }
+:where(.vsb) :where(a) { color: inherit; text-decoration: none; }
+:where(.vsb) :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:where(.vsb) :where(input, select, textarea) { font: inherit; color: inherit; }
+.vsb :focus-visible { outline: 3px solid var(--peri-500); outline-offset: 3px; }
+
+/* ==========================================================================
+   3 · Superficies · §2 de DESIGN.md — tintas legales, no improvisadas
+
+   Cada superficie declara sus tintas como CUSTOM PROPERTIES heredables, no
+   como reglas descendentes. Los componentes leen var(--ink-muted) y compañía,
+   así que la superficie más cercana gana por herencia y no por especificidad.
+   Esto es lo que permite meter una caja crema dentro de la sección índigo sin
+   que las etiquetas del formulario salgan blancas sobre blanco.
+
+   Los ratios anotados son los de la tabla de DESIGN.md §2.
+   ========================================================================== */
+.vsb-s-cream, .vsb-s-sand, .vsb-s-white, .vsb-light-ink {
+  --ink:        var(--black);
+  --ink-muted:  var(--slate-500);
+  --ink-accent: var(--peri-900);      /* peri-500 como texto en claro es 3.0:1 — ilegal */
+  --rule:       rgba(27, 33, 80, .16);
+  --error:      #B3261E;
+  color: var(--ink);
+}
+.vsb-s-navy, .vsb-s-indigo, .vsb-s-black, .vsb-dark-ink {
+  --ink:        var(--white);
+  --ink-muted:  var(--peri-100);
+  --ink-accent: var(--peri-500);
+  --rule:       rgba(255, 255, 255, .20);
+  --error:      #FFB4AB;
+  color: var(--ink);
+}
+
+/* --surface es el color de fondo de la superficie, expuesto como variable.
+   Lo necesita todo componente que al invertirse tenga que pintar texto DEL
+   color del fondo — el botón de contorno en :hover, por ejemplo. */
+.vsb-s-cream  { background: var(--cream-050); --surface: var(--cream-050); }  /* negro 18.7:1 */
+.vsb-s-sand   { background: var(--cream-200); --surface: var(--cream-200); }  /* negro 16.2:1 */
+.vsb-s-white  { background: var(--white);     --surface: var(--white);     }  /* negro 21.0:1 */
+.vsb-s-navy   { background: var(--navy-900);  --surface: var(--navy-900);  }  /* blanco 15.2:1 · peri-500 5.0:1 */
+.vsb-s-indigo { background: var(--peri-900);  --surface: var(--peri-900);  }  /* blanco  9.9:1 */
+.vsb-s-black  { background: var(--black);     --surface: var(--black);     }  /* blanco 21.0:1 */
+
+.vsb-muted { color: var(--ink-muted); }
+
+/* ==========================================================================
+   4 · Layout
+   ========================================================================== */
+.vsb-section { position: relative; padding: clamp(48px, 7vw, 96px) var(--gut); overflow: hidden; }
+.vsb-section.is-tight { padding-top: clamp(28px, 4vw, 52px); padding-bottom: clamp(28px, 4vw, 52px); }
+.vsb-shell { position: relative; width: 100%; max-width: var(--shell); margin-inline: auto; }
+.vsb-shell.is-narrow { max-width: 780px; }
+.vsb-center { text-align: center; }
+
+/* ==========================================================================
+   5 · Roles tipográficos
+   ========================================================================== */
+/* Micro-etiqueta — Brandon 700, mayúsculas, tracking 0.12em */
+.vsb-micro {
+  font-size: var(--t-micro); font-weight: 700; text-transform: uppercase;
+  letter-spacing: var(--tr-micro); line-height: 1.3;
+}
+
+/* Titular editorial — Cormorant. Caja baja (sentence case) a propósito:
+   el Title Case del template de ClickFunnels es justo lo que se veía raro. */
+.vsb-display {
+  font-family: var(--font-editorial);
+  font-size: var(--t-display); font-weight: 500; font-style: normal;
+  line-height: var(--lh-tight); letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.vsb-statement {
+  font-family: var(--font-editorial);
+  font-size: var(--t-statement); font-weight: 500;
+  line-height: var(--lh-head); letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+/* Titular de bloque en la voz de marca (Brandon), asertivo */
+.vsb-headline {
+  font-size: var(--t-headline); font-weight: 700;
+  line-height: var(--lh-head); letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.vsb-lead { font-size: var(--t-lead); line-height: 1.5; }
+.vsb-small { font-size: var(--t-small); }
+
+/* Devices en línea — §5b. Un fragmento por titular, no más. */
+.vsb-alt { font-style: italic; font-weight: 400; }            /* romana + itálica en una línea */
+.vsb-ink { color: var(--ink-accent); }        /* acento a tamano de texto; la superficie decide el tono */
+.vsb-nowrap { white-space: nowrap; }
+/* Mantiene un grupo de palabras junto, pero solo donde hay ancho para ello:
+   en móvil un nowrap obliga al navegador a desbordar en lugar de partir. */
+@media (min-width: 641px) { .vsb-keep { white-space: nowrap; } }
+
+/* Medida de lectura: el cuerpo nunca corre a todo lo ancho. */
+.vsb-measure { max-width: 46ch; }
+.vsb-measure-wide { max-width: 62ch; }
+
+/* ==========================================================================
+   6 · Chip / pill  (§5 — variante quiet y outline)
+   ========================================================================== */
+/* Pre-headline: micro-etiqueta a secas, sin pastilla. La referencia de fondo
+   crema que elegiste usa texto plano aquí, y en crema una pastilla blanca casi
+   no se distingue del fondo. */
+/* Nada de flex aquí: cuando la etiqueta pasa a dos líneas, un flex deja la
+   estrella flotando a media altura y separada del texto. Inline la mantiene
+   pegada a la primera palabra, se envuelva o no. */
+.vsb-prehead {
+  font-size: var(--t-micro); font-weight: 700; line-height: 1.45;
+  text-transform: uppercase; letter-spacing: var(--tr-micro);
+  color: var(--ink-accent);
+}
+.vsb-prehead .vsb-star { width: 12px; height: 12px; margin-right: 9px; vertical-align: -1px; }
+.vsb-center .vsb-prehead, .vsb-prehead.is-center { justify-content: center; }
+
+.vsb-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: var(--r-pill);
+  font-size: var(--t-micro); font-weight: 700;
+  text-transform: uppercase; letter-spacing: var(--tr-micro);
+  background: var(--white); color: var(--peri-900);
+  /* El filete interior es lo que hace que se lea como pastilla y no como
+     un subrayado, porque blanco sobre crema-050 son casi el mismo tono. */
+  box-shadow: inset 0 0 0 1px rgba(41,52,164,.15), 0 1px 3px rgba(27,33,80,.06);
+}
+.vsb-chip.is-outline { background: transparent; color: inherit; box-shadow: none; border: var(--hair) solid currentColor; opacity: .85; }
+.vsb-chip.is-accent  { background: var(--peri-500); color: var(--black); box-shadow: none; } /* texto negro, no blanco — §2 */
+.vsb-chip .vsb-star  { width: 12px; height: 12px; flex: none; }
+
+/* Estrella de 8 puntas del logo, como máscara CSS: se pinta en currentColor. */
+.vsb-star {
+  display: inline-block; background: currentColor; flex: none;
+  -webkit-mask: url('data:image/svg+xml,<svg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%20100%20100"><path%20d="M40.57%2019.51L46.25%203.53C47.51%200.0%2052.49%200.0%2053.75%203.53L59.43%2019.51C60.22%2021.73%2062.76%2022.78%2064.89%2021.77L80.21%2014.49C83.59%2012.88%2087.12%2016.41%2085.51%2019.79L78.23%2035.11C77.22%2037.24%2078.27%2039.78%2080.49%2040.57L96.47%2046.25C100.0%2047.51%20100.0%2052.49%2096.47%2053.75L80.49%2059.43C78.27%2060.22%2077.22%2062.76%2078.23%2064.89L85.51%2080.21C87.12%2083.59%2083.59%2087.12%2080.21%2085.51L64.89%2078.23C62.76%2077.22%2060.22%2078.27%2059.43%2080.49L53.75%2096.47C52.49%20100.0%2047.51%20100.0%2046.25%2096.47L40.57%2080.49C39.78%2078.27%2037.24%2077.22%2035.11%2078.23L19.79%2085.51C16.41%2087.12%2012.88%2083.59%2014.49%2080.21L21.77%2064.89C22.78%2062.76%2021.73%2060.22%2019.51%2059.43L3.53%2053.75C0.0%2052.49%200.0%2047.51%203.53%2046.25L19.51%2040.57C21.73%2039.78%2022.78%2037.24%2021.77%2035.11L14.49%2019.79C12.88%2016.41%2016.41%2012.88%2019.79%2014.49L35.11%2021.77C37.24%2022.78%2039.78%2021.73%2040.57%2019.51Z"/></svg>') center / contain no-repeat;
+          mask: url('data:image/svg+xml,<svg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%20100%20100"><path%20d="M40.57%2019.51L46.25%203.53C47.51%200.0%2052.49%200.0%2053.75%203.53L59.43%2019.51C60.22%2021.73%2062.76%2022.78%2064.89%2021.77L80.21%2014.49C83.59%2012.88%2087.12%2016.41%2085.51%2019.79L78.23%2035.11C77.22%2037.24%2078.27%2039.78%2080.49%2040.57L96.47%2046.25C100.0%2047.51%20100.0%2052.49%2096.47%2053.75L80.49%2059.43C78.27%2060.22%2077.22%2062.76%2078.23%2064.89L85.51%2080.21C87.12%2083.59%2083.59%2087.12%2080.21%2085.51L64.89%2078.23C62.76%2077.22%2060.22%2078.27%2059.43%2080.49L53.75%2096.47C52.49%20100.0%2047.51%20100.0%2046.25%2096.47L40.57%2080.49C39.78%2078.27%2037.24%2077.22%2035.11%2078.23L19.79%2085.51C16.41%2087.12%2012.88%2083.59%2014.49%2080.21L21.77%2064.89C22.78%2062.76%2021.73%2060.22%2019.51%2059.43L3.53%2053.75C0.0%2052.49%200.0%2047.51%203.53%2046.25L19.51%2040.57C21.73%2039.78%2022.78%2037.24%2021.77%2035.11L14.49%2019.79C12.88%2016.41%2016.41%2012.88%2019.79%2014.49L35.11%2021.77C37.24%2022.78%2039.78%2021.73%2040.57%2019.51Z"/></svg>') center / contain no-repeat;
+}
+
+/* ==========================================================================
+   7 · Botones  (§5 — pill button, relleno peri-500 con texto NEGRO)
+   ========================================================================== */
+.vsb-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 20px 34px; border-radius: var(--r-pill);
+  font-size: clamp(0.94rem, 0.88rem + 0.2vw, 1.06rem);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  text-align: center; line-height: 1.1;
+  background: var(--btn-fill); color: var(--btn-ink);
+  box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(123,138,255,.34);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+  will-change: transform;
+}
+/* El hover OSCURECE, no aclara.
+   Antes iba a --peri-100, más claro, porque el texto era negro. Con texto
+   blanco eso deja el contraste en ~2.2:1 y la etiqueta casi desaparece al
+   pasar el cursor. Con blanco hay que ir hacia abajo en la rampa. */
+.vsb-btn:hover { background: var(--btn-fill-hover); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(27,33,80,.12), 0 20px 40px rgba(123,138,255,.42); }
+.vsb-btn:active { transform: translateY(0); }
+.vsb-btn .vsb-arrow { font-size: 1.15em; line-height: 1; transition: transform .18s ease; }
+.vsb-btn:hover .vsb-arrow { transform: translateX(4px); }
+.vsb-btn.is-block { display: flex; width: 100%; }
+
+/* Secundario: contorno, para el WhatsApp del cierre */
+.vsb-btn.is-outline {
+  background: transparent; color: var(--ink);
+  border: 2px solid var(--ink); box-shadow: none;
+}
+/* Al pasar el cursor se invierte: el fondo toma la tinta y el texto toma el
+   color de la superficie.
+   OJO con currentColor aquí. Antes esta regla decía
+     background: currentColor; color: var(--cream-050);
+   y currentColor resuelve al color NUEVO de la misma regla, así que el fondo
+   y el texto acababan siendo el mismo crema: botón ilegible. Con --ink y
+   --surface, que son variables independientes de `color`, no puede pasar. */
+.vsb-btn.is-outline:hover,
+.vsb-btn.is-outline:focus-visible {
+  background: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+/* Reaseguro bajo el botón. Mismo motivo que .vsb-prehead: inline, no flex. */
+.vsb-btn-note {
+  margin-top: 14px; font-size: var(--t-small); line-height: 1.45;
+}
+.vsb-btn-note .vsb-star { margin-right: 8px; vertical-align: -1px; }
+
+/* ==========================================================================
+   8 · Caja de contenido — el "cuadrito de color sin borde" de la referencia
+   ========================================================================== */
+/* La caja es una SUPERFICIE, no solo un relleno: redeclara sus tintas para que
+   funcione igual sobre crema que dentro de la sección índigo. Sin esto, las
+   etiquetas del formulario de Proyección heredan blanco y desaparecen. */
+.vsb-box {
+  position: relative; border-radius: var(--r-box);
+  padding: clamp(28px, 3.4vw, 56px);
+  background: var(--cream-050);   /* relleno tonal, SIN borde */
+  box-shadow: var(--shadow-soft);
+
+  --ink:        var(--black);
+  --ink-muted:  var(--slate-500);
+  --ink-accent: var(--peri-900);
+  --rule:       rgba(27, 33, 80, .16);
+  --error:      #B3261E;
+  --surface:    var(--cream-050);
+  color: var(--ink);
+}
+.vsb-box.is-white { --surface: var(--white); }
+.vsb-box.is-flat { box-shadow: none; }
+.vsb-box.is-white { background: var(--white); }
+
+/* ==========================================================================
+   9 · Atmósfera  (§5d) — formas duras, recortadas por el borde. Sin blur.
+
+   DISPONIBLES PERO SIN USAR en las dos páginas, a propósito: las referencias
+   que elegiste (la de fondo crema y la del cuadro sin borde) no traen ninguna
+   forma de fondo — su profundidad viene del tono y de la sombra. Probé el
+   paralelogramo detrás del hero y a 14% sobre crema lee gris y sucio, como un
+   rectángulo perdido. Si lo quieres de vuelta, mete
+   `<div class="vsb-form-slab" aria-hidden="true"></div>` como primer hijo de
+   la sección y súbelo a `opacity:.18` — o mejor, recórtalo por dos bordes.
+   ========================================================================== */
+.vsb-form-slab, .vsb-form-line {
+  position: absolute; pointer-events: none; z-index: 0;
+  color: var(--peri-500);
+}
+/* Paralelogramo del logo, ampliado y recortado por el borde derecho. */
+.vsb-form-slab { top: -6%; right: -14%; width: min(46vw, 620px); aspect-ratio: 1 / 1.35; opacity: .14; }
+.vsb-form-slab::before {
+  content: ''; position: absolute; inset: 0; background: currentColor;
+  clip-path: polygon(34% 0%, 100% 0%, 66% 100%, 0% 100%);
+}
+/* Trazos angulares tipo línea de gráfica. */
+.vsb-form-line { inset: auto 0 8% 0; height: 220px; opacity: .5; }
+.vsb-form-line svg { width: 100%; height: 100%; }
+
+/* Filete interior — convierte una superficie plana en página (§5b) */
+.vsb-inset { position: absolute; inset: 22px; border: var(--hair) solid currentColor; opacity: .22; pointer-events: none; border-radius: 4px; }
+
+/* Todo el contenido va por encima de la atmósfera. */
+.vsb-section > .vsb-shell { z-index: 1; }
+
+/* ==========================================================================
+   10 · Encabezado de marca
+   ========================================================================== */
+/* Logo centrado. Creció en dos rondas sobre la versión original:
+   +15% (26→30 / 2.6→3vw / 34→39) y luego +20% más (30→36 / 3→3.6vw / 39→47).
+   Acumulado 1.38× respecto al arranque.
+   El header ya no lleva rótulo a la derecha, así que `center` centra de verdad;
+   con space-between y un solo hijo el logo se quedaría pegado a la izquierda. */
+.vsb-topbar {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  padding: clamp(18px, 2.4vw, 30px) var(--gut);
+}
+.vsb-topbar img { height: clamp(36px, 3.6vw, 47px); width: auto; }
+
+/* ==========================================================================
+   11 · Página 1 — hero de dos columnas
+   ========================================================================== */
+.vsb-hero {
+  display: grid; align-items: center;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(32px, 4.2vw, 64px);
+}
+.vsb-hero-copy > * + * { margin-top: clamp(18px, 2vw, 26px); }
+.vsb-hero .vsb-display { margin-top: clamp(16px, 1.8vw, 24px); }
+/* Aire entre el titular y el botón.
+   El selector va a la clase directa a propósito: .vsb-cta-block es hijo de
+   .vsb-box, no de .vsb-hero-copy, así que un `.vsb-hero-copy > .vsb-cta-block`
+   no casa con nada y el margen se queda en 0 — que es como estaba, con los dos
+   bloques pegados y solo la holgura de la caja de línea separándolos. */
+.vsb-cta-block { margin-top: clamp(28px, 3vw, 44px); }
+
+
+/* --- Portada tipográfica, SIN USO -------------------------------------------
+   Quedó de cuando no existía el archivo de la portada. Hoy la landing usa la
+   imagen real (.vsb-guia-img, más abajo). Se conserva por si alguna vez hay
+   que armar una portada de emergencia sin depender de diseño.               */
+.vsb-guia-wrap {
+  display: flex; justify-content: center;
+  perspective: 1700px;
+  perspective-origin: 46% 42%;   /* punto de fuga un poco arriba: se ve desde de pie */
+}
+.vsb-guia {
+  position: relative; width: min(100%, 380px); aspect-ratio: 1 / 1.29;
+  border-radius: 6px 14px 14px 6px; overflow: hidden;
+  background: var(--cream-050); color: var(--black);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(22px, 2.6vw, 34px);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-2.2deg) rotateY(7deg);
+  transition: transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.vsb-guia-wrap:hover .vsb-guia { transform: rotate(-1deg) rotateY(3deg) translateY(-6px); }
+/* Lomo */
+.vsb-guia::before {
+  content: ''; position: absolute; inset: 0 auto 0 0; width: 13px;
+  background: linear-gradient(90deg, rgba(27,33,80,.30) 0%, rgba(27,33,80,.07) 55%, rgba(27,33,80,0) 100%);
+}
+/* Banda de acento inferior */
+.vsb-guia::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 34%;
+  background: var(--peri-500); z-index: 0;
+  clip-path: polygon(0 26%, 100% 0, 100% 100%, 0 100%);
+}
+.vsb-guia > * { position: relative; z-index: 1; }
+.vsb-guia-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vsb-guia-top .vsb-micro { font-size: 0.62rem; letter-spacing: 0.14em; }
+.vsb-guia-top .vsb-star { width: 20px; height: 20px; color: var(--peri-900); }
+.vsb-guia-title {
+  font-family: var(--font-editorial); font-weight: 500;
+  font-size: clamp(1.5rem, 1.05rem + 1.5vw, 2.1rem);
+  line-height: 1.08; letter-spacing: -0.015em;
+}
+.vsb-guia-year {
+  display: block; font-family: var(--font); font-weight: 900;
+  font-size: clamp(2.6rem, 1.6rem + 3.4vw, 4rem);
+  line-height: .92; letter-spacing: -0.04em; margin-top: 6px;
+  color: var(--peri-900);
+}
+.vsb-guia-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.vsb-guia-foot .vsb-micro { font-size: 0.60rem; letter-spacing: 0.14em; }
+/* --- Portada real, plana, con la perspectiva puesta por CSS ---------------
+   La imagen viene de frente y sin sombra, así que el volumen se arma aquí:
+   una rotación en Y de verdad (no un skew), el canto de las hojas como cara
+   lateral en 3D y una sombra de contacto en el piso.
+
+   El sentido de la rotación no es al gusto: con rotateY NEGATIVO el canto
+   derecho se acerca y su cara lateral queda visible, que es exactamente donde
+   van las hojas en un cuadernillo encuadernado por la izquierda. Con rotación
+   positiva se vería el canto del lado del lomo, que en un libro real no
+   existe.                                                                  */
+.vsb-guia-3d {
+  position: relative;
+  width: min(100%, 400px);
+  transform-style: preserve-3d;
+  /* 13° y no más: a 17° la perspectiva se ve muy lucidora pero el titular de
+     la propia portada empieza a costar de leer, y esa portada es la oferta. */
+  transform: rotateY(-13deg) rotateZ(-0.5deg);
+  transition: transform .55s cubic-bezier(.22,.61,.36,1);
+  --thick: 11px;
+}
+.vsb-guia-img {
+  display: block; width: 100%;
+  border-radius: 3px 7px 7px 3px;
+  /* La sombra viaja con la cara, que es lo correcto para un objeto en 3D.
+     Nada de filter: drop-shadow — filter aplana el preserve-3d y se pierde
+     el canto. */
+  box-shadow:
+    0  2px  6px rgba(27,33,80,.10),
+    0 18px 40px rgba(27,33,80,.20),
+    0 40px 80px rgba(27,33,80,.14);
+}
+/* Canto de las hojas: tira al borde derecho, girada 90° sobre ese mismo borde
+   para que se meta hacia el fondo y forme el grosor. */
+.vsb-guia-3d::after {
+  content: '';
+  position: absolute; top: 1px; bottom: 1px; right: 0;
+  width: var(--thick);
+  transform-origin: right center;
+  transform: rotateY(90deg);
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, #B7B0A2 0%, #F2EDE3 32%, #E4DED1 68%, #C6BFB1 100%);
+}
+/* Sombra de contacto en el piso. Va aparte de la sombra de la cara: es la que
+   asienta la portada sobre la superficie en vez de dejarla flotando. */
+.vsb-guia-3d::before {
+  content: '';
+  position: absolute; left: 6%; right: -2%; bottom: -26px; height: 30px;
+  transform: translateZ(-1px);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(27,33,80,.26), rgba(27,33,80,0) 72%);
+  filter: blur(3px);
+  z-index: -1;
+}
+.vsb-guia-wrap:hover .vsb-guia-3d { transform: rotateY(-7deg) rotateZ(-0.2deg) translateY(-7px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .vsb-guia-wrap:hover .vsb-guia-3d { transform: rotateY(-13deg) rotateZ(-0.5deg); }
+}
+
+/* ==========================================================================
+   12 · Formularios — etiqueta FUERA del campo, placeholder más claro
+   ========================================================================== */
+.vsb-field + .vsb-field { margin-top: 18px; }
+.vsb-label {
+  display: block; margin-bottom: 8px;
+  font-size: var(--t-small); font-weight: 700; letter-spacing: 0.01em;
+}
+.vsb-label .vsb-req { color: var(--ink-accent); margin-left: 2px; }
+
+.vsb-input {
+  display: block; width: 100%;
+  padding: 17px 20px; border-radius: var(--r-box-sm);
+  border: var(--hair) solid rgba(27,33,80,.14);
+  background: var(--white); color: var(--black);
+  font-size: 1.02rem; line-height: 1.3;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+  -webkit-appearance: none; appearance: none;
+}
+.vsb-input::placeholder { color: #A9AEBC; opacity: 1; }   /* ejemplo en tono claro */
+.vsb-input:hover { border-color: rgba(27,33,80,.26); }
+.vsb-input:focus {
+  outline: none; border-color: var(--peri-500);
+  box-shadow: 0 0 0 4px rgba(123,138,255,.24);
+}
+.vsb-input[aria-invalid="true"] { border-color: #B3261E; box-shadow: 0 0 0 4px rgba(179,38,30,.14); }
+
+/* Select: flecha propia, para que no herede la del navegador */
+select.vsb-input {
+  padding-right: 46px; cursor: pointer;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="9" viewBox="0 0 14 9"><path d="M1 1l6 6 6-6" fill="none" stroke="%235B6478" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat; background-position: right 20px center;
+}
+/* Placeholder del select en tono claro, igual que el de los inputs.
+   :invalid solo cubre los obligatorios; :has() cubre también el opcional,
+   que si no se quedaba en negro y rompía la simetría de la columna. */
+select.vsb-input:invalid,
+select.vsb-input:has(option[value=""]:checked) { color: #A9AEBC; }
+select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
+
+.vsb-error {
+  display: none; margin-top: 7px;
+  font-size: var(--t-small); font-weight: 500; color: var(--error);
+}
+.vsb-field.has-error .vsb-error { display: block; }
+
+/* Prefijo de país en el campo de WhatsApp */
+.vsb-input-group { display: flex; align-items: stretch; }
+.vsb-input-prefix {
+  display: flex; align-items: center; padding: 0 14px 0 18px;
+  border: var(--hair) solid rgba(27,33,80,.14); border-right: 0;
+  border-radius: var(--r-box-sm) 0 0 var(--r-box-sm);
+  background: var(--grey-050); color: var(--slate-500);
+  font-size: 1.02rem; font-weight: 500; white-space: nowrap;
+}
+.vsb-input-group .vsb-input { border-radius: 0 var(--r-box-sm) var(--r-box-sm) 0; }
+
+/* Micro-texto de privacidad */
+.vsb-privacy {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin-top: 18px; font-size: var(--t-small); line-height: 1.4;
+}
+.vsb-privacy svg { flex: none; margin-top: 2px; }
+
+/* ==========================================================================
+   13 · Popup del formulario (Página 1)
+   ========================================================================== */
+.vsb-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+}
+.vsb-modal.is-open { display: flex; }
+.vsb-modal-veil {
+  position: absolute; inset: 0;
+  background: rgba(15,18,40,.62);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  animation: vsb-fade .22s ease both;
+}
+.vsb-modal-panel {
+  position: relative; width: 100%; max-width: 520px;
+  max-height: calc(100vh - 2 * clamp(16px, 4vw, 40px));
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  border-radius: var(--r-box);
+  padding: clamp(28px, 4vw, 44px);
+  background: var(--cream-050);
+  box-shadow: 0 30px 80px rgba(10,12,30,.42);
+  animation: vsb-pop .26s cubic-bezier(.22,.61,.36,1) both;
+
+  /* El popup es superficie clara aunque se abra encima de lo que sea. */
+  --ink:        var(--black);
+  --ink-muted:  var(--slate-500);
+  --ink-accent: var(--peri-900);
+  --rule:       rgba(27, 33, 80, .16);
+  --error:      #B3261E;
+  --surface:    var(--cream-050);
+  color: var(--ink);
+}
+.vsb-modal-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 40px; height: 40px; border-radius: var(--r-pill);
+  display: grid; place-items: center; color: var(--slate-500);
+  transition: background-color .16s ease, color .16s ease;
+}
+.vsb-modal-close:hover { background: rgba(27,33,80,.07); color: var(--black); }
+.vsb-modal-head { margin-bottom: 24px; padding-right: 40px; }
+.vsb-modal-head .vsb-headline { font-family: var(--font-editorial); font-weight: 500; letter-spacing: -0.01em; text-wrap: balance; }
+.vsb-modal-head p { margin-top: 8px; }
+@keyframes vsb-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes vsb-pop  { from { opacity: 0; transform: translateY(14px) scale(.98) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) {
+  .vsb-modal-veil, .vsb-modal-panel { animation: none; }
+  .vsb *, .vsb *::before, .vsb *::after { transition-duration: .01ms !important; }
+}
+
+/* ==========================================================================
+   14 · Página 2 — confirmación y video
+
+   Estos espaciados estaban en atributos `style` dentro del HTML. Se movieron
+   aquí porque un estilo en línea NO lo puede sobreescribir una media query, y
+   el bloque necesita apretarse en móvil (§20) para que el video entre sin
+   scroll. Los valores de escritorio son los mismos de antes.
+   ========================================================================== */
+.vsb-confirm-title { margin-top: 20px; }
+.vsb-confirm-lead  { margin: 20px auto 0; max-width: 56ch; }
+.vsb-video-block   { margin-top: clamp(38px, 5vw, 60px); }
+.vsb-video-title   { margin: 0 auto clamp(24px, 3vw, 34px); max-width: 30ch; }
+.vsb-video-note    { margin: clamp(22px, 2.6vw, 30px) auto 0; max-width: 62ch; }
+
+/* ==========================================================================
+   14b · Video
+   ========================================================================== */
+.vsb-video {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--r-box); overflow: hidden;
+  background: var(--navy-900); color: var(--white);
+  box-shadow: var(--shadow-lift); cursor: pointer;
+  display: grid; place-items: center;
+}
+.vsb-video iframe, .vsb-video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vsb-video-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vsb-video-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,18,40,.30), rgba(15,18,40,.62)); }
+.vsb-video-play {
+  position: relative; display: grid; place-items: center; gap: 0;
+  width: clamp(70px, 8vw, 96px); aspect-ratio: 1; border-radius: var(--r-pill);
+  background: var(--peri-500); color: var(--black);
+  box-shadow: 0 10px 40px rgba(123,138,255,.5);
+  transition: transform .2s ease;
+}
+.vsb-video:hover .vsb-video-play { transform: scale(1.07); }
+.vsb-video-play svg { margin-left: 4px; }
+.vsb-video-tag {
+  position: absolute; bottom: 18px; left: 18px; z-index: 2;
+  background: rgba(15,18,40,.55); color: var(--white);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   15 · Credenciales (Página 2, bloque 3)
+   ========================================================================== */
+.vsb-creds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 68px); align-items: center; }
+
+.vsb-founders { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6vw, 20px); }
+/* Los dos retratos van sobre el MISMO telón claro, montado en el archivo por
+   `tools/compose-founders.mjs` a partir de los PNG recortados. El telón claro
+   es lo que los separa de la sección navy — que era el pedido del cliente.
+
+   Hubo antes un passe-partout crema aquí; existía solo como rodeo mientras las
+   fotos tenían fondo oscuro (el saco de Gil y su telón eran literalmente el
+   mismo color, distancia 8 en RGB, y ninguna máscara automática los separaba).
+   Con los recortes con alfa el problema desapareció y el marco sobra: sería un
+   aro crema alrededor de un gris claro, dos claros peleados.
+
+   Sin filtros CSS: las dos fotos ya salen igualadas del compositor y cualquier
+   ajuste sobre una sola volvería a descasarlas.                             */
+.vsb-founder { position: relative; border-radius: var(--r-box); overflow: hidden; }
+.vsb-founder img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center top;
+}
+
+/* Degradado oscuro al pie para sostener el nombre. Ahora cae sobre la ropa
+   oscura de los dos, no sobre el telón, así que sigue funcionando igual. */
+.vsb-founder-cap {
+  position: absolute; inset: auto 0 0 0; z-index: 2; padding: 44px 18px 16px;
+  background: linear-gradient(180deg, rgba(15,18,40,0), rgba(15,18,40,.88));
+  color: var(--white);
+}
+.vsb-founder-cap strong { display: block; font-size: var(--t-small); font-weight: 700; line-height: 1.25; }
+.vsb-founder-cap span { display: block; margin-top: 2px; font-size: var(--t-micro); color: var(--peri-100); }
+
+/* Lista de credenciales */
+.vsb-cred-list { display: flex; flex-direction: column; gap: 13px; margin-top: 22px; }
+.vsb-cred-list li { display: flex; align-items: flex-start; gap: 11px; font-size: var(--t-body); }
+.vsb-cred-list .vsb-star { width: 13px; height: 13px; margin-top: 7px; color: var(--peri-500); }
+
+/* Cita con el 97% — el único numeral hero de la página */
+.vsb-stat { margin-top: clamp(26px, 3vw, 36px); padding-top: clamp(24px, 3vw, 32px); border-top: var(--hair) solid var(--rule); }
+.vsb-stat-num {
+  font-size: clamp(3.4rem, 2rem + 4.6vw, 5.6rem); font-weight: 900;
+  line-height: .88; letter-spacing: -0.045em; color: var(--peri-500);   /* 5.0:1 sobre navy-900 — la única superficie donde es legal */
+}
+.vsb-stat-quote {
+  font-family: var(--font-editorial); font-style: italic; font-weight: 400;
+  font-size: var(--t-lead); line-height: 1.4; margin-top: 12px; max-width: 40ch;
+}
+
+/* ==========================================================================
+   16 · Preguntas frecuentes — acordeón, Cormorant itálica, filetes
+   ========================================================================== */
+.vsb-faq { margin-top: clamp(28px, 3.4vw, 44px); border-top: var(--hair) solid var(--rule); }
+.vsb-faq-item { border-bottom: var(--hair) solid var(--rule); }
+.vsb-faq-q {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  width: 100%; padding: clamp(20px, 2.4vw, 28px) 4px; text-align: left;
+  font-family: var(--font-editorial); font-style: italic; font-weight: 500;
+  font-size: clamp(1.24rem, 1rem + 0.8vw, 1.72rem);
+  line-height: 1.25; letter-spacing: -0.005em;
+  transition: color .16s ease;
+}
+.vsb-faq-q:hover { color: var(--ink-accent); }
+.vsb-faq-q svg { flex: none; transition: transform .28s cubic-bezier(.22,.61,.36,1); }
+.vsb-faq-item.is-open .vsb-faq-q svg { transform: rotate(180deg); }
+.vsb-faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s cubic-bezier(.22,.61,.36,1); }
+.vsb-faq-item.is-open .vsb-faq-a { grid-template-rows: 1fr; }
+.vsb-faq-a > div { overflow: hidden; }
+.vsb-faq-a p { padding: 0 4px clamp(22px, 2.6vw, 30px); max-width: 62ch; color: var(--ink-muted); }
+
+/* Fallback: sin :has() ni animación de grid, el contenido sigue accesible. */
+@supports not (grid-template-rows: 1fr) {
+  .vsb-faq-a { display: none; }
+  .vsb-faq-item.is-open .vsb-faq-a { display: block; }
+}
+
+/* ==========================================================================
+   17 · Cierre
+   ========================================================================== */
+.vsb-close-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: clamp(26px, 3vw, 34px); }
+
+/* ==========================================================================
+   18 · Footer legal (idéntico en las dos páginas)
+   ========================================================================== */
+.vsb-footer { padding: clamp(40px, 5vw, 64px) var(--gut) clamp(32px, 4vw, 44px); }
+.vsb-footer-top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 22px; padding-bottom: 26px; border-bottom: var(--hair) solid rgba(255,255,255,.14);
+}
+.vsb-footer img { height: 30px; width: auto; }
+.vsb-footer-links { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; font-size: var(--t-small); }
+.vsb-footer-links a { color: var(--peri-100); text-decoration: underline; text-decoration-color: rgba(166,179,255,.4); text-underline-offset: 3px; }
+.vsb-footer-links a:hover { color: var(--white); text-decoration-color: currentColor; }
+.vsb-footer-meta { margin-top: 26px; display: flex; flex-direction: column; gap: 10px; font-size: var(--t-small); }
+.vsb-footer-meta a { text-decoration: underline; text-underline-offset: 3px; }
+.vsb-footer-legal { margin-top: 22px; font-size: var(--t-micro); line-height: 1.55; color: rgba(255,255,255,.56); max-width: 78ch; text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+/* ==========================================================================
+   19 · Utilidades
+   ========================================================================== */
+.vsb-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.vsb-hidden { display: none !important; }
+.vsb-divider { height: var(--hair); background: currentColor; opacity: .16; border: 0; margin: 0; }
+
+/* Estado de envío del botón */
+.vsb-btn.is-loading { pointer-events: none; opacity: .72; }
+.vsb-btn.is-loading .vsb-arrow { animation: vsb-spin 0.9s linear infinite; }
+@keyframes vsb-spin { to { transform: rotate(360deg) } }
+
+/* ==========================================================================
+   20 · Responsive
+   ========================================================================== */
+@media (max-width: 980px) {
+  .vsb-hero { grid-template-columns: 1fr; gap: clamp(28px, 5vw, 44px); }
+  .vsb-hero-visual { order: -1; }              /* la portada primero en móvil */
+  .vsb-guia { width: min(72%, 300px); }        /* portada tipográfica (sin uso) */
+  /* En una columna angosta la rotación fuerte se ve forzada, y además el 3D
+     se sale de la caja. Se baja el giro y se deja aire a los lados. */
+  .vsb-guia-3d { width: min(84%, 380px); transform: rotateY(-10deg) rotateZ(-0.4deg); }
+  .vsb-guia-wrap { justify-content: center; }
+  .vsb-creds { grid-template-columns: 1fr; gap: 36px; }
+  .vsb-measure, .vsb-measure-wide { max-width: none; }
+}
+
+@media (max-width: 640px) {
+  /* El titular a 35px partía en siete líneas dentro de la caja. */
+  .vsb { --t-display: clamp(1.75rem, 1.00rem + 3.6vw, 2.30rem); }
+  .vsb-topbar { padding-bottom: 6px; }
+  .vsb-topbar .vsb-micro { display: none; }
+  /* Tipo y tracking más chicos para que la etiqueta del botón quepa en una
+     línea; si se parte, la flecha se va sola hasta la derecha y se ve rota. */
+  /* ---- El video, arriba del pliegue -----------------------------------
+     El cliente pidió que en móvil no haya que hacer scroll para ver el video,
+     para que nadie se quede en la confirmación y se vaya.
+
+     Medido: en iPhone 14 (390×844) ya entraba completo. El que NO entraba era
+     el iPhone SE / 8 (375×667), donde tras la barra del navegador quedan unos
+     560px útiles y el video terminaba en 671 — se cortaba por 111px.
+
+     Se recupera espacio apretando los huecos del bloque, no encogiendo el
+     video: bajarle tamaño al reproductor lo vuelve un sello y nadie le da clic.
+     Se aplica de 640px hacia abajo, así que en tablet y escritorio el bloque
+     sigue respirando igual que antes.                                       */
+  .vsb-section.vsb-confirm-section { padding-top: 18px; padding-bottom: 30px; }
+  .vsb-confirm-title { margin-top: 12px; }
+  .vsb-confirm-lead  { margin-top: 12px; font-size: 0.97rem; line-height: 1.42; }
+  .vsb-video-block   { margin-top: 18px; }
+  .vsb-video-title   { margin-bottom: 14px; font-size: 1.42rem; }
+  .vsb-video-note    { margin-top: 18px; }
+
+  /* La pastilla "Registro confirmado" se oculta SOLO en móvil: el propio
+     titular ("¡Listo! Tu guía ya va en camino") ya confirma el registro, así
+     que es refuerzo repetido y aquí cuesta 58px de los que hacen falta.
+     Para recuperarla, borra esta regla — el video vuelve a cortarse en el SE. */
+  .vsb-confirm-badge { display: none; }
+
+  .vsb-btn { padding: 17px 20px; width: 100%; font-size: 0.82rem; letter-spacing: 0.04em; gap: 9px; }
+  .vsb-btn-note { text-align: center; }
+  .vsb-founders { gap: 10px; }
+  .vsb-form-slab { opacity: .09; }
+  /* Logo del footer centrado en móvil, y los enlaces con él para que el bloque
+     de marca lea como una unidad. La letra chica de abajo se queda alineada a
+     la izquierda: un párrafo largo centrado no se lee bien. */
+  .vsb-footer-top { flex-direction: column; align-items: center; text-align: center; }
+  .vsb-footer-links { justify-content: center; }
+}
+
+/* En pantallas muy cortas la landing deja de forzar el "sin scroll". */
+@media (min-width: 981px) and (min-height: 760px) {
+  .vsb-hero-section { min-height: calc(100vh - 96px); display: grid; align-items: center; }
+}
+
+@media print { .vsb-modal, .vsb-form-slab, .vsb-form-line { display: none !important; } }
