@@ -27,7 +27,41 @@
 
    El !important es a propósito: ClickFunnels inyecta estilos en línea con
    mucha prioridad y sin esto no hay manera de ganarle.
+
+   TODO VA EN px, NUNCA EN rem. ClickFunnels pone `html { font-size: 24px }`, así
+   que cualquier `rem` sale 50% más grande de lo diseñado. Es el error que hizo
+   que el titular saliera a 60px dentro de una columna de 574px y se recortara.
    ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0a · La FILA que aloja el formulario
+   Ponle a la Row que contiene el formulario el CSS ID `vista-form-section`.
+   Le da la superficie arena del diseño y el aire de arriba y abajo, para que
+   se lea como una continuación del hero y no como un bloque pegado aparte.
+   -------------------------------------------------------------------------- */
+#vista-form-section {
+  background: #EAE1D0 !important;
+  padding: 8px 20px 64px !important;
+  margin: 0 !important;
+}
+#vista-form-section > *,
+#vista-form-section .row,
+#vista-form-section [class*="col-"] {
+  background: transparent !important;
+}
+
+/* Encabezado opcional arriba del formulario, si metes un elemento de texto:
+   ponle CSS ID `vista-form-title`. */
+#vista-form-title,
+#vista-form-title * {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 30px !important;
+  font-weight: 500 !important;
+  line-height: 1.16 !important;
+  color: #000000 !important;
+  text-align: center !important;
+  margin: 0 0 6px !important;
+}
 
 /* --------------------------------------------------------------------------
    0 · La tarjeta que contiene el formulario
@@ -35,6 +69,9 @@
    para que se vea como el cuadro crema del diseño.
    -------------------------------------------------------------------------- */
 #vista-card {
+  max-width: 620px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   background: #F6F1E7 !important;
   border: 0 !important;
   border-radius: 24px !important;
@@ -75,7 +112,7 @@
 #vista-form .elFormLabel {
   display: block !important;
   margin: 0 0 8px 0 !important;
-  font-size: 0.94rem !important;
+  font-size: 15.04px !important;
   font-weight: 700 !important;
   line-height: 1.3 !important;
   color: #000000 !important;
@@ -103,7 +140,7 @@
   border-radius: 14px !important;
   background: #FFFFFF !important;
   color: #000000 !important;
-  font-size: 1.02rem !important;
+  font-size: 16.32px !important;
   line-height: 1.3 !important;
   box-shadow: none !important;
   transition: border-color .16s ease, box-shadow .16s ease !important;
@@ -146,9 +183,14 @@
 
 /* --------------------------------------------------------------------------
    4 · Botón de envío
-   Relleno periwinkle con texto NEGRO. No es un descuido: blanco sobre
-   #7B8AFF da 3.0:1 y reprueba accesibilidad; negro da 6.9:1.
-   Está en DESIGN.md §2 como la regla más importante del sistema.
+   Relleno periwinkle con texto BLANCO, por decisión del cliente (2a ronda de
+   ajustes). Queda anotado el número: blanco sobre #7B8AFF da 3.0:1 y no alcanza
+   AA; con negro daba 6.9:1. Se mantiene igual que el botón del bloque HTML para
+   que los dos se vean idénticos.
+   El hover va a #6272D3 (más OSCURO). Antes iba a #A6B3FF, más claro, que con
+   texto negro funcionaba; con texto blanco deja el contraste en ~2.2:1 y la
+   etiqueta casi desaparece.
+   Si algún día quieren blanco Y contraste: cambia el relleno a #2934A4 (9.9:1).
    -------------------------------------------------------------------------- */
 #vista-form button[type="submit"],
 #vista-form .elButton,
@@ -166,8 +208,8 @@
   border-radius: 999px !important;
   background: #7B8AFF !important;
   background-image: none !important;
-  color: #000000 !important;
-  font-size: 1.06rem !important;
+  color: #FFFFFF !important;
+  font-size: 16.96px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
@@ -177,7 +219,7 @@
 }
 #vista-form .elButtonText,
 #vista-button .elButtonText {
-  color: #000000 !important;
+  color: #FFFFFF !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
@@ -185,7 +227,7 @@
 #vista-form button[type="submit"]:hover,
 #vista-form .elButton:hover,
 #vista-button .elButton:hover {
-  background: #A6B3FF !important;
+  background: #6272D3 !important;
   transform: translateY(-2px) !important;
 }
 /* CF mete un sub-texto bajo la etiqueta del botón; casi siempre estorba. */
@@ -199,7 +241,7 @@
 #vista-form .error,
 #vista-form .elError {
   margin-top: 7px !important;
-  font-size: 0.94rem !important;
+  font-size: 15.04px !important;
   font-weight: 500 !important;
   color: #B3261E !important;
   background: transparent !important;
