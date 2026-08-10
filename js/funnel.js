@@ -398,6 +398,75 @@
   }
 
   /* ======================================================================
+     7b · Etiqueta de los DESPLEGABLES, y obligatorio vs. opcional
+
+     El elemento Select Box de ClickFunnels no tiene ajuste de etiqueta —igual
+     que tampoco tiene el del placeholder—: solo Input Name y las opciones. El
+     campo sale sin nada arriba y el formulario pierde el ritmo del diseño.
+
+     Aquí se le pone una etiqueta con EL MISMO marcado que CF usa en los demás
+     campos (.elLabel > .labelText > <label>), así que la pinta el mismo CSS y
+     no hay una etiqueta que se vea distinta de las otras.
+
+     El texto sale de ETIQUETAS_CF; si no casa ninguna regla, se usa el Input
+     Name tal cual, que es lo que se escribió en ClickFunnels.
+
+     Y de paso se marca cada campo como obligatorio u opcional. CF NO pone el
+     atributo `required`: le pone al input la clase `required1`. Sin distinguir
+     eso, el asterisco salía también en el único campo opcional de la página 2.
+     ====================================================================== */
+  var ETIQUETAS_CF = [
+    { name: /ciudad/i,       texto: 'Ciudad' },
+    { name: /ahorro|rango/i, texto: 'Ahorro mensual que tienes en mente' },
+  ];
+
+  function etiquetaDeCF(texto, paraId) {
+    var cont = document.createElement('div');
+    cont.className = 'elLabel vsb-cf-etiqueta';
+    var medio = document.createElement('div');
+    medio.className = 'borderHolder labelText';
+    var lab = document.createElement('label');
+    lab.textContent = texto;
+    if (paraId) lab.setAttribute('for', paraId);
+    medio.appendChild(lab);
+    cont.appendChild(medio);
+    return cont;
+  }
+
+  function etiquetasYObligatoriosCF() {
+    var form = document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
+    if (!form) return;
+
+    var campos = form.querySelectorAll('select, input:not([type="hidden"]):not([type="submit"]):not([type="button"])');
+
+    Array.prototype.forEach.call(campos, function (campo) {
+      var wrap = campo.closest('.elFormItemWrapper, .elInputWrapper') || campo.parentElement;
+      if (!wrap) return;
+
+      /* ---- Etiqueta, solo si no hay ninguna (los desplegables) ---- */
+      if (campo.tagName === 'SELECT' && !wrap.querySelector('.elLabel, label')) {
+        var clave = (campo.getAttribute('name') || '').trim();
+        var texto = '';
+        for (var i = 0; i < ETIQUETAS_CF.length && !texto; i++) {
+          if (clave && ETIQUETAS_CF[i].name.test(clave)) texto = ETIQUETAS_CF[i].texto;
+        }
+        if (!texto) texto = clave;                     /* el Input Name, tal cual */
+        if (texto) wrap.insertBefore(etiquetaDeCF(texto, campo.id), wrap.firstChild);
+      }
+
+      /* ---- Obligatorio u opcional ---- */
+      var clases = String(campo.className);
+      var obligatorio = campo.hasAttribute('required') || /\brequired1\b/.test(clases);
+      var opcionalExplicito = !obligatorio && /\brequired0\b/.test(clases);
+
+      if (obligatorio) wrap.classList.add('vsb-cf-req');
+      else if (opcionalExplicito) wrap.classList.add('vsb-cf-opt');
+      /* Si CF no dice ni una cosa ni la otra, no se inventa nada: la etiqueta
+         se queda limpia en lugar de arriesgar un "(opcional)" equivocado. */
+    });
+  }
+
+  /* ======================================================================
      8 · Marcar la estructura de ClickFunnels por CONTENIDO, no por CSS ID
 
      Pedir que se pongan CSS IDs a mano en la Row y la columna correctas resultó
@@ -572,6 +641,7 @@
     personalize();
     marcarEstructuraCF();
     ejemplosEnFormularioCF();
+    etiquetasYObligatoriosCF();
   }
 
   if (document.readyState === 'loading') {
@@ -583,7 +653,11 @@
   /* ClickFunnels monta el campo de teléfono con una librería que reconstruye el
      input después de cargar, y al hacerlo le devuelve su placeholder. Dos
      pasadas más lo dejan bien; son idempotentes, así que no pisan nada. */
-  function reintentar() { marcarEstructuraCF(); ejemplosEnFormularioCF(); }
+  function reintentar() {
+    marcarEstructuraCF();
+    ejemplosEnFormularioCF();
+    etiquetasYObligatoriosCF();
+  }
   setTimeout(reintentar, 600);
   setTimeout(reintentar, 1800);
 })();

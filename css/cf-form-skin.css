@@ -649,13 +649,29 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
 /* El asterisco tiene que ir en el elemento que REALMENTE contiene el texto.
    CF anida <div.elLabel> > <div.labelText> > <label>, todos de bloque: un
    ::after en cualquiera de los de fuera caía en su propio renglón debajo.
-   Los tres selectores cubren las tres formas en que CF arma la etiqueta. */
-:is(#vista-form,.vsb-cf-form) .elLabel label::after,
-:is(#vista-form,.vsb-cf-form) .elLabel .labelText:not(:has(label))::after,
-:is(#vista-form,.vsb-cf-form) .elLabel:not(:has(.labelText, label))::after {
+   Los tres selectores cubren las tres formas en que CF arma la etiqueta.
+
+   Y solo en los campos OBLIGATORIOS. ClickFunnels no pone el atributo
+   `required` —marca el input con la clase `required1`—, así que quien decide es
+   funnel.js §7b, que etiqueta el envoltorio .vsb-cf-req o .vsb-cf-opt. Con un
+   asterisco a ciegas, el único campo opcional de la página 2 salía como
+   obligatorio. */
+.vsb-cf-req .elLabel label::after,
+.vsb-cf-req .elLabel .labelText:not(:has(label))::after,
+.vsb-cf-req .elLabel:not(:has(.labelText, label))::after {
   content: ' *';
   color: #2934A4;
   margin-left: 2px;
+}
+
+/* Y el opcional lo dice con palabras, como en el diseño. */
+.vsb-cf-opt .elLabel label::after,
+.vsb-cf-opt .elLabel .labelText:not(:has(label))::after,
+.vsb-cf-opt .elLabel:not(:has(.labelText, label))::after {
+  content: ' (opcional)';
+  color: #5B6478;
+  font-weight: 400;
+  margin-left: 4px;
 }
 
 /* Un párrafo que NO sea la nota legal se lee como el subtítulo del titular
