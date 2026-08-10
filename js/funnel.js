@@ -443,8 +443,18 @@
       var wrap = campo.closest('.elFormItemWrapper, .elInputWrapper') || campo.parentElement;
       if (!wrap) return;
 
-      /* ---- Etiqueta, solo si no hay ninguna (los desplegables) ---- */
-      if (campo.tagName === 'SELECT' && !wrap.querySelector('.elLabel, label')) {
+      /* ---- Etiqueta, solo si no hay ninguna (los desplegables) ----
+         Ojo con el <label>: ClickFunnels ENVUELVE el <select> en un
+         `label.elSelectLabel` vacío. Un simple querySelector('label') lo
+         encontraba y daba el campo por etiquetado, así que no se inyectaba
+         nada y el desplegable seguía sin título. Cuenta solo una etiqueta que
+         tenga texto y que NO contenga al propio campo. */
+      var yaTieneEtiqueta = !!wrap.querySelector('.elLabel') ||
+        Array.prototype.some.call(wrap.querySelectorAll('label'), function (l) {
+          return !l.contains(campo) && (l.textContent || '').trim() !== '';
+        });
+
+      if (campo.tagName === 'SELECT' && !yaTieneEtiqueta) {
         var clave = (campo.getAttribute('name') || '').trim();
         var texto = '';
         for (var i = 0; i < ETIQUETAS_CF.length && !texto; i++) {
@@ -457,7 +467,11 @@
       /* ---- Obligatorio u opcional ---- */
       var clases = String(campo.className);
       var obligatorio = campo.hasAttribute('required') || /\brequired1\b/.test(clases);
-      var opcionalExplicito = !obligatorio && /\brequired0\b/.test(clases);
+      /* A los <input> CF les pone `required0` cuando no son obligatorios, pero a
+         los <select> no les pone nada: en un desplegable, que falte `required1`
+         ya significa opcional. */
+      var opcionalExplicito = !obligatorio &&
+        (/\brequired0\b/.test(clases) || campo.tagName === 'SELECT');
 
       if (obligatorio) wrap.classList.add('vsb-cf-req');
       else if (opcionalExplicito) wrap.classList.add('vsb-cf-opt');

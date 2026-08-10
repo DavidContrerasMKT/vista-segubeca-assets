@@ -162,6 +162,29 @@
 }
 
 /* --------------------------------------------------------------------------
+   0ab · Los contenedores que ALOJAN la fila del formulario
+
+   ClickFunnels anida la Row del formulario DENTRO de otra Row de 1170px. Las
+   reglas de sangrado del bloque HTML no ayudan aquí: solo actúan sobre los
+   contenedores que llevan un `.vsb` dentro, y esta Row no lleva ninguno —es el
+   formulario nativo. Resultado medido en vivo: la banda índigo salía de 1108px
+   en una ventana de 1900, con una costura de 20px contra la copia de arriba.
+
+   Cada selector lleva :has(.vsb-cf-formrow), así que solo casan los ANCESTROS.
+   La tarjeta vive dentro de la fila y por eso nunca la tocan.
+   -------------------------------------------------------------------------- */
+.container:has(.vsb-cf-formrow),
+.containerInnerV2:has(.vsb-cf-formrow),
+.row:has(.vsb-cf-formrow),
+[class*="col-"]:has(.vsb-cf-formrow) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* --------------------------------------------------------------------------
    0b · La FILA del formulario de la PÁGINA 2 (bloque "Proyección")
    Ahí la banda es índigo, no arena, y la copia va ENCIMA de la banda —no dentro
    de la tarjeta—, así que el bloque de texto va en su propia Row arriba.
