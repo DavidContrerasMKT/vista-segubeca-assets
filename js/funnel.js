@@ -439,14 +439,30 @@
         /* Formulario en su propia fila: se pinta como franja con tarjeta al centro. */
         filaCampos.classList.add('vsb-cf-formrow');
       }
-      if (colTarjeta) colTarjeta.classList.add('vsb-cf-card');
+      /* Una sola tarjeta. Si un ancestro ya está marcado, no se marca otra vez:
+         antes se marcaban la columna externa (694px) Y una interna (582px), y
+         se dibujaba una tarjeta crema dentro de otra. */
+      if (colTarjeta && !colTarjeta.parentElement.closest('.vsb-cf-card')) {
+        colTarjeta.classList.add('vsb-cf-card');
+      }
     }
 
-    /* La columna del titular también es tarjeta: cubre el caso de que el
-       formulario todavía no se haya movido dentro. */
-    var titular = document.querySelector('.vsb-prehead, .vsb-display');
-    var colTitular = col(titular);
-    if (colTitular && colTitular !== colPortada) colTitular.classList.add('vsb-cf-card');
+    /* Si el formulario aún no está dentro de ninguna columna, la del titular
+       hace de tarjeta. Se resuelve a la columna HIJA DIRECTA de la fila del
+       hero —no a la más cercana, que suele ser una interna— y solo si no hay
+       ya una tarjeta marcada. */
+    if (!document.querySelector('.vsb-cf-card')) {
+      var titular = document.querySelector('.vsb-prehead, .vsb-display');
+      var colTitular = null;
+      if (filaHero && titular && filaHero.contains(titular)) {
+        colTitular = Array.prototype.filter.call(filaHero.children, function (ch) {
+          return /col-/.test(String(ch.className)) && ch.contains(titular);
+        })[0];
+      } else {
+        colTitular = col(titular);
+      }
+      if (colTitular && colTitular !== colPortada) colTitular.classList.add('vsb-cf-card');
+    }
   }
 
   /* ======================================================================

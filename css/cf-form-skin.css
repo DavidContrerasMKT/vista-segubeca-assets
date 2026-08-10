@@ -47,10 +47,19 @@
 :is(#vista-card,.vsb-cf-card) .row {
   width: 100% !important; max-width: none !important;
   margin: 0 !important; padding: 0 !important;
+  /* Y sin decoración: CF le da a sus Row un radio de 55px, fondo y sombra, y
+     eso pintaba una segunda tarjeta redondeada dentro de la crema. */
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
-:is(#vista-card,.vsb-cf-card) [class*="col-"] {
+:is(#vista-card,.vsb-cf-card) [class*="col-"]:not(.vsb-cf-card) {
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
   padding: 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 :is(#vista-card,.vsb-cf-card) .col-inner { margin: 0 !important; }
 
