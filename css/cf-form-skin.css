@@ -107,15 +107,33 @@
 
 /* Separación entre campos. CF nombra el contenedor de cada campo de varias
    formas según la versión; van todas. */
+/* ClickFunnels pone la clase `elInput` en el ENVOLTORIO del campo, no en el
+   <input>, y mete la etiqueta como <div class="elLabel"> DESPUÉS del input.
+   Dos consecuencias que había que arreglar:
+     · el envoltorio recibía el estilo de campo -> caja blanca dentro de caja
+       blanca, con doble borde;
+     · la etiqueta salía DEBAJO del campo y encimada.
+   Se resuelve poniendo el envoltorio en columna y mandando la etiqueta al
+   frente con order:-1. Así el orden visual es etiqueta arriba, campo abajo,
+   sin depender de que CF cambie el orden del DOM.
+   El :not(input) es para no anular el estilo del campo si en alguna versión de
+   CF la clase `elInput` sí cae en el <input>.                                */
 #vista-form .elFormItemWrapper,
 #vista-form .elFormItem,
 #vista-form .inputHolder,
-#vista-form .elInputWrapper {
+#vista-form .elInputWrapper,
+#vista-form :not(input):not(select):not(textarea).elInput {
+  display: flex !important;
+  flex-direction: column !important;
   margin-bottom: 18px !important;
   background: transparent !important;
   border: 0 !important;
   padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
+#vista-form .elLabel,
+#vista-form label { order: -1 !important; }
 
 /* --------------------------------------------------------------------------
    2 · Etiquetas — FUERA del campo, como en la referencia que mandaste
@@ -128,6 +146,10 @@
 #vista-form .elLabel,
 #vista-form .elFormLabel {
   display: block !important;
+  order: -1 !important;
+  /* CF suele escribirlas en MAYÚSCULAS desde su propio CSS; el diseño las
+     quiere en caja normal, y así se lee el acento de "Correo" y "WhatsApp". */
+  text-transform: none !important;
   margin: 0 0 8px 0 !important;
   font-size: 15.04px !important;
   font-weight: 700 !important;
@@ -140,13 +162,16 @@
 /* --------------------------------------------------------------------------
    3 · Campos
    -------------------------------------------------------------------------- */
+/* Solo elementos de formulario REALES. `.elInput` se quitó de esta lista a
+   propósito: en CF esa clase vive en el envoltorio (ver arriba) y al estilarla
+   como campo aparecían dos cajas anidadas. */
 #vista-form input[type="text"],
 #vista-form input[type="email"],
 #vista-form input[type="tel"],
 #vista-form input[type="number"],
+#vista-form input:not([type]),
 #vista-form select,
 #vista-form textarea,
-#vista-form .elInput,
 #vista-form input.elFormInput {
   display: block !important;
   width: 100% !important;
@@ -188,6 +213,31 @@
   background-repeat: no-repeat !important;
   background-position: right 20px center !important;
 }
+
+/* --------------------------------------------------------------------------
+   3b · Campo de teléfono con selector de país (intl-tel-input)
+   CF monta el WhatsApp con la librería iti: una bandera absoluta encima del
+   input. Sin dejarle sitio, el número se escribe debajo de la bandera.
+   -------------------------------------------------------------------------- */
+/* La librería iti espera position:relative en el contenedor y el selector de
+   país en absolute encima del input. Se declara aquí para no depender de que
+   el CSS de la librería haya cargado ni del orden en que lo haga: sin esto el
+   "MX +52" se apila como un bloque arriba del campo. */
+#vista-form .iti { display: block !important; width: 100% !important; position: relative !important; }
+#vista-form .iti__country-container {
+  position: absolute !important;
+  top: 0 !important; bottom: 0 !important; left: 0 !important;
+  width: auto !important;
+  display: flex !important; align-items: center !important;
+}
+#vista-form input.iti__tel-input,
+#vista-form .iti input[type="text"],
+#vista-form .iti input[type="tel"] { padding-left: 62px !important; }
+#vista-form .iti__country-container {
+  order: 0 !important;
+  z-index: 2 !important;
+}
+#vista-form .iti__selected-country { border-radius: 14px 0 0 14px !important; }
 
 /* CF a veces envuelve el input en una caja con su propio borde: la apagamos
    para no terminar con dos bordes, uno dentro del otro. */
