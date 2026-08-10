@@ -313,6 +313,10 @@ body:has(> .vsb) { margin: 0; }
    overflow:clip en lugar de devolver esta línea. */
 .vsb-section { position: relative; padding: clamp(48px, 7cqw, 96px) var(--gut); }
 .vsb-section.is-tight { padding-top: clamp(28px, 4cqw, 52px); padding-bottom: clamp(28px, 4cqw, 52px); }
+/* Para ClickFunnels: una banda que SIGUE abajo en la Row siguiente. Es lo que
+   deja el formulario nativo de la página 2 dentro de la misma banda índigo que
+   su copia, sin una costura de 96px en medio. */
+.vsb-section.is-cut-bottom { padding-bottom: 0; }
 .vsb-shell { position: relative; width: 100%; max-width: var(--shell); margin-inline: auto; }
 .vsb-shell.is-narrow { max-width: 780px; }
 .vsb-center { text-align: center; }

@@ -245,26 +245,80 @@
 
   /* ======================================================================
      6 · Video: se inserta el iframe solo al hacer clic.
-     Pega la URL de embed en data-vsb-video del contenedor .vsb-video.
-     YouTube:  https://www.youtube.com/embed/ID
-     Vimeo:    https://player.vimeo.com/video/ID
+
+     En data-vsb-video va el video en CUALQUIER forma en que YouTube lo dé:
+     el ID a secas, el enlace de compartir, el de la barra del navegador o el
+     de embed. La página lo normaliza, así que no hay que armar la URL a mano
+     —era el paso donde más fácil se equivoca uno— ni recordar cuál sirve.
+
+       dQw4w9WgXcQ                                  (el ID solo)
+       https://youtu.be/dQw4w9WgXcQ                 (compartir)
+       https://www.youtube.com/watch?v=dQw4w9WgXcQ  (barra del navegador)
+       https://www.youtube.com/embed/dQw4w9WgXcQ    (embed)
+       https://vimeo.com/76979871                   (Vimeo también)
+
+     El master es 4K: YouTube se encarga de las versiones y sirve hasta 2160p
+     según la pantalla y la conexión de quien mira. Aquí no se fija calidad.
      ====================================================================== */
-  document.addEventListener('click', function (e) {
-    var box = e.target.closest('.vsb-video');
-    if (!box) return;
+  var ID_YT = /^[A-Za-z0-9_-]{11}$/;
 
-    var src = box.getAttribute('data-vsb-video');
-    if (!src || box.querySelector('iframe')) return;
+  /** Devuelve la URL de embed a partir de lo que se haya pegado. */
+  function urlDeEmbed(valor) {
+    var v = String(valor || '').trim();
+    if (!v) return '';
 
-    var sep = src.indexOf('?') === -1 ? '?' : '&';
+    /* youtube-nocookie: no deja cookies de seguimiento mientras nadie le da
+       clic, y el clic ya es consentimiento explícito. */
+    var yt = function (id) { return 'https://www.youtube-nocookie.com/embed/' + id; };
+
+    if (ID_YT.test(v)) return yt(v);
+
+    var m = v.match(/(?:youtube\.com|youtube-nocookie\.com)\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{11})/)
+         || v.match(/youtube\.com\/.*[?&]v=([A-Za-z0-9_-]{11})/)
+         || v.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+    if (m) return yt(m[1]);
+
+    m = v.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (m) return 'https://player.vimeo.com/video/' + m[1];
+
+    return v;   /* cualquier otro reproductor: se usa tal cual */
+  }
+
+  function arrancarVideo(box) {
+    if (!box || box.querySelector('iframe')) return;
+
+    var src = urlDeEmbed(box.getAttribute('data-vsb-video'));
+    if (!src) return;
+
+    /* playsinline: en iPhone, sin esto el video se apodera de la pantalla.
+       rel=0 y modestbranding: al final no salen videos de la competencia. */
+    var params = /vimeo\.com/.test(src)
+      ? 'autoplay=1&dnt=1'
+      : 'autoplay=1&rel=0&modestbranding=1&playsinline=1';
+
     var iframe = document.createElement('iframe');
-    iframe.src = src + sep + 'autoplay=1&rel=0';
+    iframe.src = src + (src.indexOf('?') === -1 ? '?' : '&') + params;
     iframe.title = 'Video de Gilberto Gamboa — Segubeca';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen';
     iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('loading', 'lazy');
     box.appendChild(iframe);
     box.style.cursor = 'default';
+    box.removeAttribute('role');
+    box.removeAttribute('tabindex');
+  }
+
+  document.addEventListener('click', function (e) {
+    arrancarVideo(e.target.closest('.vsb-video'));
+  });
+
+  /* El contenedor es role="button": tiene que responder al teclado igual que
+     al ratón, o para quien navega con Tab el video no existe. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    var box = e.target.closest && e.target.closest('.vsb-video');
+    if (!box) return;
+    e.preventDefault();
+    arrancarVideo(box);
   });
 
   /* ======================================================================
@@ -280,16 +334,26 @@
      que es la huella de esa limitación. Si algún día CF sí permite escribirlo
      y pones otro texto, este código lo respeta y no hace nada.
 
-     ▸ SI HAY QUE CAMBIAR UN EJEMPLO, SE CAMBIA AQUÍ. Las claves son el atributo
-       `name` que pone ClickFunnels a cada campo.
+     ▸ SI HAY QUE CAMBIAR UN EJEMPLO, SE CAMBIA AQUÍ.
+
+     Cada regla reconoce el campo por el `name` que le pone CF O por el texto de
+     su etiqueta. Hacen falta las dos vías: en los campos personalizados —los
+     seis de la Proyección en la página 2— CF inventa el `name` (`custom_…`,
+     `field_1`…) y no hay forma de saberlo de antemano. La etiqueta, en cambio,
+     la escribe quien arma la página y es la del diseño.
+
+     El ORDEN importa: gana la primera regla que casa, así que las específicas
+     van antes. "Nombre del hij@" tiene que casar con la de hij@, no con la de
+     nombre a secas.
      ====================================================================== */
-  var EJEMPLOS_CF = {
-    name:         'María Fernanda Gómez',
-    email:        'maria@correo.com',
-    phone_number: '81 1234 5678',
-    // Página 2 · formulario de Proyección, si algún día se arma nativo en CF
-    hijo_nombre:  'Emilia',
-  };
+  var EJEMPLOS_CF = [
+    { etiqueta: /hij|niet/i,            name: /hijo.*nombre|nombre.*hijo/i, ejemplo: 'Emilia' },
+    { etiqueta: /^su edad|edad de (?:su|l)/i, name: /hijo.*edad/i,          ejemplo: '7' },
+    { etiqueta: /tu edad|edad actual/i, name: /titular.*edad|tu.*edad/i,    ejemplo: '38' },
+    { etiqueta: /whats|tel[eé]f/i,      name: /phone|whats|tel/i,           ejemplo: '81 1234 5678' },
+    { etiqueta: /correo|e-?mail/i,      name: /email|correo/i,              ejemplo: 'maria@correo.com' },
+    { etiqueta: /nombre/i,              name: /^name$|nombre/i,             ejemplo: 'María Fernanda Gómez' },
+  ];
 
   function ejemplosEnFormularioCF() {
     /* Se busca por los marcadores estructurales, no solo por #vista-form: ese
@@ -298,17 +362,26 @@
     var form = document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
     if (!form) return;
 
-    Object.keys(EJEMPLOS_CF).forEach(function (name) {
-      var input = form.querySelector('[name="' + name + '"]');
-      if (!input || input.type === 'hidden') return;
+    /* Los <select> no tienen placeholder: su "ejemplo" es la primera opción,
+       y esa se escribe en ClickFunnels. */
+    var campos = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"])');
 
+    Array.prototype.forEach.call(campos, function (input) {
       var wrap = input.closest('.elFormItemWrapper, .elInputWrapper') || input.parentElement;
       var label = wrap ? wrap.querySelector('.elLabel, label') : null;
-      var textoEtiqueta = label ? label.textContent.trim().toLowerCase() : '';
-      var ph = (input.placeholder || '').trim();
+      var textoEtiqueta = label ? label.textContent.trim() : '';
+      var nombre = input.getAttribute('name') || '';
 
+      var regla = null;
+      for (var i = 0; i < EJEMPLOS_CF.length && !regla; i++) {
+        var r = EJEMPLOS_CF[i];
+        if ((nombre && r.name.test(nombre)) || (textoEtiqueta && r.etiqueta.test(textoEtiqueta))) regla = r;
+      }
+      if (!regla) return;
+
+      var ph = (input.placeholder || '').trim();
       var vacio = !ph;
-      var duplicaEtiqueta = textoEtiqueta && ph.toLowerCase() === textoEtiqueta;
+      var duplicaEtiqueta = textoEtiqueta && ph.toLowerCase() === textoEtiqueta.toLowerCase();
 
       /* El campo de teléfono lo monta la librería intl-tel-input, que le pone
          sola un número de ejemplo del país ("222 123 4567"). Eso no duplica la
@@ -319,7 +392,7 @@
       var esNumeroAutomatico = /^[\d\s()+.-]+$/.test(ph);
 
       if (vacio || duplicaEtiqueta || esNumeroAutomatico) {
-        input.placeholder = EJEMPLOS_CF[name];
+        input.placeholder = regla.ejemplo;
       }
     });
   }
@@ -339,6 +412,10 @@
        .vsb-cf-card     la columna que contiene el titular o el formulario
        .vsb-cf-form     el <form> nativo de CF de verdad
        .vsb-cf-formrow  la Row del formulario, cuando va en una Row propia
+       .vsb-cf-indigo   esa misma Row, cuando es la del bloque "Proyección" de
+                        la página 2: la banda va indigo y no arena, y así el
+                        color no depende de que alguien acierte con el selector
+                        de color de ClickFunnels
 
      Los CSS ID siguen funcionando si están bien puestos: esto es adicional, no
      un reemplazo. Y funciona con el formulario dentro de la tarjeta o en su
@@ -438,6 +515,17 @@
         })[0] || col(campos[0]);
         /* Formulario en su propia fila: se pinta como franja con tarjeta al centro. */
         filaCampos.classList.add('vsb-cf-formrow');
+
+        /* Página 2 · si el bloque "Proyección" está ARRIBA en la página, esta
+           franja es la continuación de su banda indigo, no una franja arena.
+           Se compara la posición en el documento en vez de exigir que las dos
+           Rows sean hermanas: ClickFunnels envuelve cada Row a su manera. */
+        var marcaProy = document.querySelector('[data-vsb-cf="proyeccion"]');
+        if (marcaProy) {
+          var rel = filaCampos.compareDocumentPosition(marcaProy);
+          var vaAntes = !!(rel & Node.DOCUMENT_POSITION_PRECEDING);
+          if (vaAntes || filaCampos.contains(marcaProy)) filaCampos.classList.add('vsb-cf-indigo');
+        }
       }
       /* Una sola tarjeta. Si un ancestro ya está marcado, no se marca otra vez:
          antes se marcaban la columna externa (694px) Y una interna (582px), y

@@ -148,6 +148,9 @@
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
   margin-left: 0 !important; margin-right: 0 !important;
   padding-left: 0 !important; padding-right: 0 !important;
+  /* Y los márgenes verticales a cero: en la página 1 fueron 55px de blanco
+     arriba de la banda, y aquí partirían en dos la banda índigo. */
+  margin-top: 0 !important; margin-bottom: 0 !important;
 }
 /* Fondo transparente a los envoltorios de CF para que se vea el arena de la
    fila — PERO no a la tarjeta. `.col-inner` casa con [class*="col-"], así que
@@ -156,6 +159,27 @@
 :is(#vista-form-section,.vsb-cf-formrow) .row:not(:is(#vista-card,.vsb-cf-card)),
 :is(#vista-form-section,.vsb-cf-formrow) [class*="col-"]:not(:is(#vista-card,.vsb-cf-card)) {
   background: transparent !important;
+}
+
+/* --------------------------------------------------------------------------
+   0b · La FILA del formulario de la PÁGINA 2 (bloque "Proyección")
+   Ahí la banda es índigo, no arena, y la copia va ENCIMA de la banda —no dentro
+   de la tarjeta—, así que el bloque de texto va en su propia Row arriba.
+   El color lo pone esta hoja, no el selector de ClickFunnels: así las dos Rows
+   no pueden acabar con dos índigos distintos y la costura es invisible.
+   La marca .vsb-cf-indigo la pone funnel.js §8 cuando ve el bloque de copia.
+   -------------------------------------------------------------------------- */
+:is(#vista-form-section,.vsb-cf-formrow).vsb-cf-indigo {
+  background: #2934A4 !important;
+  /* Arriba, el aire que en el diseño separa la tarjeta de la copia; abajo, el
+     cierre de la sección. La copia aporta su propio padding superior. */
+  padding: clamp(30px, 4vw, 44px) 16px clamp(48px, 7vw, 96px) !important;
+}
+/* La tarjeta de la Proyección mide 780px, no 620: es el ancho de
+   .vsb-shell.is-narrow, que es donde vive en el diseño. */
+:is(#vista-form-section,.vsb-cf-formrow).vsb-cf-indigo :is(#vista-card,.vsb-cf-card),
+:is(#vista-form-section,.vsb-cf-formrow).vsb-cf-indigo > [class*="col-"].vsb-cf-card {
+  max-width: 780px !important;
 }
 
 /* Encabezado opcional arriba del formulario, si metes un elemento de texto:
