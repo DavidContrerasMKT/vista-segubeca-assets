@@ -268,11 +268,66 @@
   });
 
   /* ======================================================================
-     7 · Arranque
+     7 · Ejemplos dentro de los campos del formulario NATIVO de ClickFunnels
+
+     El diseño pide etiqueta ARRIBA del campo y un EJEMPLO dentro, en gris
+     claro. En el plan de CF que estamos usando eso no se puede configurar: el
+     editor solo expone "Label Text" y usa ESE MISMO texto como placeholder, así
+     que la etiqueta y el ejemplo salían idénticos ("Nombre" / "Nombre").
+
+     Aquí se rellenan los ejemplos, pero SIN pisar a ClickFunnels: solo se
+     escribe el placeholder si está vacío o si es un duplicado de la etiqueta,
+     que es la huella de esa limitación. Si algún día CF sí permite escribirlo
+     y pones otro texto, este código lo respeta y no hace nada.
+
+     ▸ SI HAY QUE CAMBIAR UN EJEMPLO, SE CAMBIA AQUÍ. Las claves son el atributo
+       `name` que pone ClickFunnels a cada campo.
      ====================================================================== */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', personalize);
-  } else {
-    personalize();
+  var EJEMPLOS_CF = {
+    name:         'María Fernanda Gómez',
+    email:        'maria@correo.com',
+    phone_number: '81 1234 5678',
+    // Página 2 · formulario de Proyección, si algún día se arma nativo en CF
+    hijo_nombre:  'Emilia',
+  };
+
+  function ejemplosEnFormularioCF() {
+    var form = document.getElementById('vista-form');
+    if (!form) return;
+
+    Object.keys(EJEMPLOS_CF).forEach(function (name) {
+      var input = form.querySelector('[name="' + name + '"]');
+      if (!input || input.type === 'hidden') return;
+
+      var wrap = input.closest('.elFormItemWrapper, .elInputWrapper') || input.parentElement;
+      var label = wrap ? wrap.querySelector('.elLabel, label') : null;
+      var textoEtiqueta = label ? label.textContent.trim().toLowerCase() : '';
+      var ph = (input.placeholder || '').trim();
+
+      var vacio = !ph;
+      var duplicaEtiqueta = textoEtiqueta && ph.toLowerCase() === textoEtiqueta;
+
+      if (vacio || duplicaEtiqueta) input.placeholder = EJEMPLOS_CF[name];
+    });
   }
+
+  /* ======================================================================
+     8 · Arranque
+     ====================================================================== */
+  function arrancar() {
+    personalize();
+    ejemplosEnFormularioCF();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arrancar);
+  } else {
+    arrancar();
+  }
+
+  /* ClickFunnels monta el campo de teléfono con una librería que reconstruye el
+     input después de cargar, y al hacerlo le devuelve su placeholder. Dos
+     pasadas más lo dejan bien; son idempotentes, así que no pisan nada. */
+  setTimeout(ejemplosEnFormularioCF, 600);
+  setTimeout(ejemplosEnFormularioCF, 1800);
 })();
