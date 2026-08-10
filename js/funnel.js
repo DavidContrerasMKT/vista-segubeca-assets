@@ -399,28 +399,44 @@
     var colPortada = col(portada);
     if (colPortada) colPortada.classList.add('vsb-cf-cover-col');
 
-    /* El formulario de CF: el único <form> con un campo visible de verdad.
-       CF mete varios <form> ocultos para su propio seguimiento. */
-    var forms = Array.prototype.slice.call(document.querySelectorAll('form'));
-    var form = null;
-    for (var i = 0; i < forms.length; i++) {
-      var campos = forms[i].querySelectorAll('input');
-      for (var j = 0; j < campos.length; j++) {
-        var c = campos[j];
-        var visible = c.offsetParent !== null;
-        var util = ['text', 'email', 'tel', 'number'].indexOf(c.type) !== -1;
-        if (visible && util) { form = forms[i]; break; }
+    /* La tarjeta se localiza por los CAMPOS VISIBLES, no por el <form>.
+       Motivo: ClickFunnels deja el <form> como un contenedor OCULTO con sus 43
+       inputs de seguimiento, fuera de las filas, y coloca los campos visibles
+       aparte en la estructura de la página. Buscar "el form con campos
+       visibles" no encontraba nada, y la tarjeta nunca se marcaba. */
+    var campos = Array.prototype.filter.call(
+      document.querySelectorAll('input'),
+      function (i) {
+        return i.offsetParent !== null &&
+               ['text', 'email', 'tel', 'number'].indexOf(i.type) !== -1;
+      });
+
+    if (campos.length) {
+      /* Ancestro común de los campos: sirve de contenedor del formulario. */
+      var comun = campos[0];
+      while (comun && !campos.every(function (c) { return comun.contains(c); })) {
+        comun = comun.parentElement;
       }
-      if (form) break;
-    }
-    if (form) {
-      form.classList.add('vsb-cf-form');
-      var colForm = col(form);
-      if (colForm) colForm.classList.add('vsb-cf-card');
-      var filaForm = fila(form);
-      /* Si el formulario NO está en la Row del hero, su Row se pinta como una
-         franja aparte con la tarjeta centrada. */
-      if (filaForm && filaForm !== filaHero) filaForm.classList.add('vsb-cf-formrow');
+      if (comun) comun.classList.add('vsb-cf-form');
+
+      /* La tarjeta es la columna HIJA DIRECTA de la fila que contiene los
+         campos — no la columna más cercana, que en CF suele ser una interna
+         de 705px dentro de otra de 902px. */
+      var filaCampos = fila(campos[0]);
+      var colTarjeta = null;
+
+      if (filaHero && filaHero.contains(campos[0])) {
+        colTarjeta = Array.prototype.filter.call(filaHero.children, function (ch) {
+          return /col-/.test(String(ch.className)) && ch.contains(campos[0]);
+        })[0];
+      } else if (filaCampos) {
+        colTarjeta = Array.prototype.filter.call(filaCampos.children, function (ch) {
+          return /col-/.test(String(ch.className)) && ch.contains(campos[0]);
+        })[0] || col(campos[0]);
+        /* Formulario en su propia fila: se pinta como franja con tarjeta al centro. */
+        filaCampos.classList.add('vsb-cf-formrow');
+      }
+      if (colTarjeta) colTarjeta.classList.add('vsb-cf-card');
     }
 
     /* La columna del titular también es tarjeta: cubre el caso de que el
