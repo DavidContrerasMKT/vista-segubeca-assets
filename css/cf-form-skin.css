@@ -566,7 +566,9 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
 :is(#vista-form,.vsb-cf-form) .elHeadline.elHeadline.elHeadline,
 :is(#vista-form,.vsb-cf-form) .elHeadline.elHeadline.elHeadline * {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 34.4px !important;
+  /* La misma escala que --t-headline en .vsb.is-plain. Con 34.4px fijos, en
+     móvil el título del formulario salía más grande que el titular. */
+  font-size: clamp(24px, 17.6px + 1.15vw, 34.4px) !important;
   font-weight: 500 !important;
   line-height: 1.16 !important;
   letter-spacing: -0.01em !important;
@@ -575,7 +577,9 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   text-transform: none !important;
 }
 :is(#vista-form,.vsb-cf-form) .elHeadlineWrapper {
-  margin: 0 0 24px 0 !important;   /* mismo aire que .vsb-modal-head */
+  /* Abajo, el aire de .vsb-modal-head. Arriba, separación del titular: sin
+     ella las dos frases se leen como una sola. */
+  margin: clamp(12px, 1.6vw, 22px) 0 24px 0 !important;
   padding: 0 !important;
 }
 
