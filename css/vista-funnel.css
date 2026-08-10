@@ -199,9 +199,15 @@ body:has(> .vsb) { margin: 0; }
      `.vsb` quedó como un contenedor de 508–850px, y el titular se iba al MÍNIMO
      de su clamp: 35px en vez de los 59px del diseño.
      En la página suelta `.vsb` ocupa todo el ancho, así que ahí vw ≡ cqw — usar
-     vw en las piezas reproduce el original exactamente.
-     Se conserva `container-type` para que las reglas @container de layout
-     (apilado en móvil, tamaño de la portada) sigan funcionando. */
+     vw en las piezas reproduce el original exactamente. */
+
+  /* Y estas piezas NO establecen contenedor de consulta propio.
+     Con uno propio, sus 508–850px hacían que las @container de layout se
+     dispararan como si fuera móvil: la portada caía a `min(84%, 380px)` y salía
+     a 379px en pleno escritorio, en vez de 396px. Sin contenedor, esas reglas
+     no las alcanzan y usan los valores de escritorio; el apilado en móvil lo
+     resuelve la media query de #vista-hero-section, que sí mira la ventana. */
+  container-type: normal;
   --t-display:   clamp(35.2px, 18.4px + 2.95vw, 59.2px);
   --t-statement: clamp(28px, 16.8px + 2.00vw, 46.08px);
   --t-headline:  clamp(24px, 17.6px + 1.15vw, 34.4px);
@@ -600,6 +606,14 @@ body:has(> .vsb) { margin: 0; }
 }
 .vsb-guia-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .vsb-guia-foot .vsb-micro { font-size: 9.6px; letter-spacing: 0.14em; }
+/* En móvil la portada se achica por MEDIA query: las piezas pegadas en CF ya no
+   son contenedores de consulta (ver .vsb.is-plain), así que el @container de §20
+   no las alcanza. En la página suelta ambas reglas coinciden. */
+@media (max-width: 860px) {
+  .vsb.is-plain .vsb-guia-3d { width: min(88%, 400px); transform: rotateY(-10deg) rotateZ(-0.4deg); }
+  .vsb.is-plain .vsb-guia-wrap { justify-content: center; }
+}
+
 /* --- Portada real, plana, con la perspectiva puesta por CSS ---------------
    La imagen viene de frente y sin sombra, así que el volumen se arma aquí:
    una rotación en Y de verdad (no un skew), el canto de las hojas como cara
