@@ -594,7 +594,7 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   gap: 9px !important;
   margin: 18px 0 0 0 !important;
   padding: 0 !important;
-  text-align: left !important;
+  text-align: start !important;
 }
 :is(#vista-form,.vsb-cf-form) .vsb-cf-nota,
 :is(#vista-form,.vsb-cf-form) .vsb-cf-nota * {
@@ -602,7 +602,7 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   line-height: 1.4 !important;
   font-weight: 400 !important;
   color: #5B6478 !important;
-  text-align: left !important;
+  text-align: start !important;
 }
 :is(#vista-form,.vsb-cf-form) .vsb-cf-nota::before {
   content: '' !important;
