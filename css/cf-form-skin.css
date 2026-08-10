@@ -274,6 +274,10 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
+  /* El ritmo entre campos lo pone esta hoja, no el deslizador "Top Margin" de
+     ClickFunnels: ahí cada campo se ajusta por separado y basta un 15px en uno
+     para que la columna quede despareja. */
+  margin-top: 0 !important;
   margin-bottom: 18px !important;
   background: transparent !important;
   border: 0 !important;
