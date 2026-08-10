@@ -191,7 +191,22 @@ body:has(> .vsb) { margin: 0; }
 /* Variante sin fondo, para las piezas que se pegan DENTRO de un contenedor de
    ClickFunnels que ya trae su propio color (la tarjeta crema del hero, por
    ejemplo). Sin esto el arena de `.vsb` se pintaría encima de la tarjeta. */
-.vsb.is-plain { background: transparent !important; }
+.vsb.is-plain {
+  background: transparent !important;
+
+  /* La escala tipográfica de estas piezas se mide contra la VENTANA, no contra
+     el propio bloque. Al partir la landing en trozos para ClickFunnels, cada
+     `.vsb` quedó como un contenedor de 508–850px, y el titular se iba al MÍNIMO
+     de su clamp: 35px en vez de los 59px del diseño.
+     En la página suelta `.vsb` ocupa todo el ancho, así que ahí vw ≡ cqw — usar
+     vw en las piezas reproduce el original exactamente.
+     Se conserva `container-type` para que las reglas @container de layout
+     (apilado en móvil, tamaño de la portada) sigan funcionando. */
+  --t-display:   clamp(35.2px, 18.4px + 2.95vw, 59.2px);
+  --t-statement: clamp(28px, 16.8px + 2.00vw, 46.08px);
+  --t-headline:  clamp(24px, 17.6px + 1.15vw, 34.4px);
+  --t-lead:      clamp(16.96px, 15.68px + 0.25vw, 20px);
+}
 
 .vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
 .vsb {

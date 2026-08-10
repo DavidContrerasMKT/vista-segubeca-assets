@@ -71,7 +71,8 @@
   /* Dentro del hero la tarjeta es la COLUMNA derecha, no una tarjeta centrada:
      el tope de 620px la dejaría angosta al lado de la portada. */
   max-width: none !important;
-  padding: clamp(24px, 2.6vw, 44px) !important;
+  /* 56px arriba, igual que .vsb-box del diseño original (antes 44 y se notaba). */
+  padding: clamp(28px, 3.4vw, 56px) !important;
   /* SIN márgenes laterales. La tarjeta es una columna flex del 50%: sumarle
      márgenes hace que las dos columnas pasen del 100% y flex-wrap las apila,
      una debajo de la otra. La separación con la portada la da el padding
@@ -397,6 +398,12 @@
 }
 :is(#vista-form,.vsb-cf-form) .elButtonText,
 #vista-button .elButtonText {
+  /* CF le pone al <span> su propio interlineado y padding, y el botón salía
+     73px de alto contra los 60px del diseño. */
+  line-height: 1.1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-block !important;
   color: #FFFFFF !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
