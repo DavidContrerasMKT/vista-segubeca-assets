@@ -444,6 +444,30 @@
   box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(123,138,255,.34) !important;
   transition: transform .18s ease, background-color .18s ease !important;
 }
+/* El contenedor interno tambien lleva el interlineado apretado: sin esto el
+   boton medía 62px contra los 60px del diseño. */
+:is(#vista-form,.vsb-cf-form) .elButtonMain,
+#vista-button .elButtonMain {
+  line-height: 1.1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+/* La flecha del original. Va en ::after del texto, no del botón, para que
+   desaparezca junto con la etiqueta cuando CF entra en estado de carga. */
+:is(#vista-form,.vsb-cf-form) .elButtonMainText::after,
+#vista-button .elButtonMainText::after {
+  content: '→';
+  display: inline-block !important;
+  margin-left: 10px !important;
+  font-weight: 400 !important;
+  transition: transform .18s ease;
+}
+:is(#vista-form,.vsb-cf-form) .elButton:hover .elButtonMainText::after,
+#vista-button .elButton:hover .elButtonMainText::after { transform: translateX(3px); }
+
 /* El :not(.elButtonSpinner) es lo que impide que reaparezca el rombo: el <i>
    del spinner también lleva la clase .elButtonText, y CF lo tiene en
    display:none hasta que el botón entra en estado de carga. */
@@ -527,3 +551,61 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
    :is(#vista-form,.vsb-cf-form) .elFormItemWrapper { position: relative; padding-top: 30px !important; }
    :is(#vista-form,.vsb-cf-form) input::before { content: attr(placeholder); }
    ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   7 · Textos que ClickFunnels aporta dentro de la tarjeta
+   El titular y la nota legal son elementos nativos de CF (Headline y
+   Paragraph); heredan la tipografía de la guía de estilo de CF, no la del
+   diseño. Aquí se igualan a .vsb-headline y .vsb-privacy del original.
+   -------------------------------------------------------------------------- */
+:is(#vista-form,.vsb-cf-form) .elHeadline,
+:is(#vista-form,.vsb-cf-form) .elHeadline * {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 34.4px !important;
+  font-weight: 500 !important;
+  line-height: 1.16 !important;
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+  color: #000000 !important;
+  text-transform: none !important;
+}
+:is(#vista-form,.vsb-cf-form) .elHeadlineWrapper {
+  margin: 0 0 24px 0 !important;   /* mismo aire que .vsb-modal-head */
+  padding: 0 !important;
+}
+
+/* Nota legal: 15.04px, gris pizarra, alineada a la izquierda y con el escudo.
+   El icono va como fondo de un ::before porque el elemento de CF no admite
+   marcado propio. */
+:is(#vista-form,.vsb-cf-form) .elParagraph {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 9px !important;
+  margin: 18px 0 0 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+:is(#vista-form,.vsb-cf-form) .elParagraph,
+:is(#vista-form,.vsb-cf-form) .elParagraph * {
+  font-size: 15.04px !important;
+  line-height: 1.4 !important;
+  font-weight: 400 !important;
+  color: #5B6478 !important;
+  text-align: left !important;
+}
+:is(#vista-form,.vsb-cf-form) .elParagraph::before {
+  content: '' !important;
+  flex: none !important;
+  width: 13px !important; height: 16px !important;
+  margin-top: 3px !important;
+  background: no-repeat center/contain
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="13" height="16" viewBox="0 0 13 16"><path d="M6.5 1L11.5 3v4.5c0 3.2-2.1 6.1-5 7.5-2.9-1.4-5-4.3-5-7.5V3L6.5 1z" fill="none" stroke="%235B6478" stroke-width="1.3" stroke-linejoin="round"/></svg>') !important;
+}
+
+/* Asterisco de obligatorio, como el <span class="vsb-req"> del original.
+   Los tres campos visibles son obligatorios. */
+:is(#vista-form,.vsb-cf-form) .elLabel::after {
+  content: ' *';
+  color: #2934A4;
+  margin-left: 2px;
+}
