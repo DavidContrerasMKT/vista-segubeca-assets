@@ -108,6 +108,21 @@
   box-sizing: border-box !important;
 }
 
+/* El <form> mismo va SIN decoración.
+   Cuando el CSS ID se pone en un elemento que CF trata como Row, hereda el
+   estilo de Row: radio de 55px y sombra. Eso dibujaba una segunda tarjeta
+   redondeada DENTRO de la tarjeta crema — se veía como dos cajas anidadas. */
+#vista-form {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
 /* Separación entre campos. CF nombra el contenedor de cada campo de varias
    formas según la versión; van todas. */
 /* ClickFunnels pone la clase `elInput` en el ENVOLTORIO del campo, no en el
