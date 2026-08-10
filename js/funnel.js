@@ -292,7 +292,10 @@
   };
 
   function ejemplosEnFormularioCF() {
-    var form = document.getElementById('vista-form');
+    /* Se busca por los marcadores estructurales, no solo por #vista-form: ese
+       CSS ID puede no existir (o estar mal puesto, y entonces lo quitamos en
+       §8). Con esto los ejemplos funcionan sin depender de ningún ID. */
+    var form = document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
     if (!form) return;
 
     Object.keys(EJEMPLOS_CF).forEach(function (name) {
