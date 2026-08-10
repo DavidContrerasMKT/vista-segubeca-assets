@@ -103,6 +103,19 @@
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+/* Proporción de columnas del diseño original: la rejilla del hero es
+   0.82fr / 1.18fr, o sea 41% para la portada y 59% para la tarjeta. CF reparte
+   50/50, y con eso la tarjeta salía de 620px contra los 694px del original —
+   suficiente para que el titular pasara de 4 líneas a 5. */
+@media (min-width: 861px) {
+  :is(#vista-hero-section,.vsb-cf-hero) > [class*="col-"]:not(#vista-card):not(.vsb-cf-card) {
+    flex: 0 0 44% !important; width: 44% !important; max-width: 44% !important;
+  }
+  :is(#vista-hero-section,.vsb-cf-hero) > :is(#vista-card,.vsb-cf-card) {
+    flex: 0 0 56% !important; width: 56% !important; max-width: 56% !important;
+  }
+}
+
 /* En pantallas chicas las dos columnas se apilan y la portada va primero. */
 @media (max-width: 860px) {
   :is(#vista-hero-section,.vsb-cf-hero) { flex-direction: column !important; }
