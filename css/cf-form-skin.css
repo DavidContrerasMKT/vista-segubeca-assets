@@ -70,6 +70,9 @@
    ponle CSS ID `vista-form-title`. */
 #vista-form-title,
 #vista-form-title * {
+  /* CF aplica text-transform:capitalize en el <span> interno, no en el
+     contenedor: sin apagarlo aquí el título sale en Title Case. */
+  text-transform: none !important;
   font-family: 'Cormorant Garamond', Georgia, serif !important;
   font-size: 30px !important;
   font-weight: 500 !important;
@@ -141,7 +144,13 @@
   box-shadow: none !important;
   border-radius: 0 !important;
 }
-/* La etiqueta: estática (CF la posiciona encima del campo) y de primera. */
+/* La etiqueta: estática, de primera y COLAPSADA a la altura de su texto.
+   En el diseño `de-input-block` de CF la etiqueta es un bloque de 80px de alto
+   con el texto abajo y decoración propia dentro. Al sacarla de su posición
+   absoluta, esos 80px quedaban a la vista como una caja blanca vacía encima
+   del campo — es lo que se veía como "campo duplicado".
+   Por eso hay que devolverle la altura automática y apagar la decoración de
+   sus hijos, no solo cambiarle el order. */
 #vista-form .elLabel,
 #vista-form label {
   order: -1 !important;
@@ -150,8 +159,31 @@
   transform: none !important;
   top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
   width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 0 8px 0 !important;
+  line-height: 1.3 !important;
   pointer-events: auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
+/* Decoración interna de la etiqueta y restos del diseño de CF. */
+#vista-form .elLabel > *,
+#vista-form label > * {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* CF deja un .inputHolder vacío y un .input-icon suelto; estorban. */
+#vista-form .elFormItemWrapper > .inputHolder:empty,
+#vista-form .elFormItemWrapper > .input-icon { display: none !important; }
 
 /* --------------------------------------------------------------------------
    2 · Etiquetas — FUERA del campo, como en la referencia que mandaste
