@@ -39,6 +39,21 @@
    Le da la superficie arena del diseño y el aire de arriba y abajo, para que
    se lea como una continuación del hero y no como un bloque pegado aparte.
    -------------------------------------------------------------------------- */
+/* Dentro de la tarjeta, ClickFunnels anida sus propias Row y columnas con
+   padding y márgenes: la tarjeta medía 902px pero el contenido sólo 508px, con
+   ~394px perdidos en envoltorios. Eso hacía que el titular partiera en 5 líneas
+   en vez de 4 y que los campos quedaran metidos hacia dentro.
+   Aquí se anulan esos envoltorios para que el contenido use el ancho real. */
+:is(#vista-card,.vsb-cf-card) .row {
+  width: 100% !important; max-width: none !important;
+  margin: 0 !important; padding: 0 !important;
+}
+:is(#vista-card,.vsb-cf-card) [class*="col-"] {
+  width: 100% !important; max-width: none !important; flex-basis: 100% !important;
+  padding: 0 !important;
+}
+:is(#vista-card,.vsb-cf-card) .col-inner { margin: 0 !important; }
+
 /* La columna de la portada nunca lleva tarjeta, la marque quien la marque. */
 .vsb-cf-cover-col {
   background: transparent !important;
