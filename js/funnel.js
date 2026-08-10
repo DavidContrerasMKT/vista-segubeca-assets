@@ -463,6 +463,18 @@
       }
       if (colTitular && colTitular !== colPortada) colTitular.classList.add('vsb-cf-card');
     }
+
+    /* La nota legal se marca por su texto. El CSS no puede seleccionar por
+       contenido, y hay que distinguirla de un posible subtítulo del titular:
+       la nota lleva escudo, gris pizarra y 15.04px; el subtítulo, no. */
+    var contenedor = document.querySelector('.vsb-cf-form, #vista-form');
+    if (contenedor) {
+      Array.prototype.forEach.call(contenedor.querySelectorAll('p, .elParagraph'), function (par) {
+        if (/protegida|compartimos|terceros/i.test(par.textContent || '')) {
+          par.classList.add('vsb-cf-nota');
+        }
+      });
+    }
   }
 
   /* ======================================================================

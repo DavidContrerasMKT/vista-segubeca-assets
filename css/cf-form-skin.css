@@ -476,6 +476,9 @@
   /* CF le pone al <span> su propio interlineado y padding, y el botón salía
      73px de alto contra los 60px del diseño. */
   line-height: 1.1 !important;
+  /* El tamaño va aquí también: CF le pone 20px al <span>, y con eso el botón
+     medía 62px contra los 59px del diseño. */
+  font-size: 16.96px !important;
   padding: 0 !important;
   margin: 0 !important;
   display: inline-block !important;
@@ -558,14 +561,16 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
    Paragraph); heredan la tipografía de la guía de estilo de CF, no la del
    diseño. Aquí se igualan a .vsb-headline y .vsb-privacy del original.
    -------------------------------------------------------------------------- */
-:is(#vista-form,.vsb-cf-form) .elHeadline,
-:is(#vista-form,.vsb-cf-form) .elHeadline * {
+/* La clase va repetida a propósito: la regla global de tipografía de la
+   sección 1 usa *:not(...):not(...) y le ganaba en especificidad. */
+:is(#vista-form,.vsb-cf-form) .elHeadline.elHeadline.elHeadline,
+:is(#vista-form,.vsb-cf-form) .elHeadline.elHeadline.elHeadline * {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
   font-size: 34.4px !important;
   font-weight: 500 !important;
   line-height: 1.16 !important;
   letter-spacing: -0.01em !important;
-  text-align: left !important;
+  text-align: start !important;
   color: #000000 !important;
   text-transform: none !important;
 }
@@ -577,7 +582,13 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
 /* Nota legal: 15.04px, gris pizarra, alineada a la izquierda y con el escudo.
    El icono va como fondo de un ::before porque el elemento de CF no admite
    marcado propio. */
-:is(#vista-form,.vsb-cf-form) .elParagraph {
+/* El envoltorio de CF trae 10px de relleno arriba y abajo: dejaba 43px entre
+   el botón y la nota, contra los 18px del diseño. */
+:is(#vista-form,.vsb-cf-form) .elParagraphWrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+:is(#vista-form,.vsb-cf-form) .vsb-cf-nota {
   display: flex !important;
   align-items: flex-start !important;
   gap: 9px !important;
@@ -585,15 +596,15 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   padding: 0 !important;
   text-align: left !important;
 }
-:is(#vista-form,.vsb-cf-form) .elParagraph,
-:is(#vista-form,.vsb-cf-form) .elParagraph * {
+:is(#vista-form,.vsb-cf-form) .vsb-cf-nota,
+:is(#vista-form,.vsb-cf-form) .vsb-cf-nota * {
   font-size: 15.04px !important;
   line-height: 1.4 !important;
   font-weight: 400 !important;
   color: #5B6478 !important;
   text-align: left !important;
 }
-:is(#vista-form,.vsb-cf-form) .elParagraph::before {
+:is(#vista-form,.vsb-cf-form) .vsb-cf-nota::before {
   content: '' !important;
   flex: none !important;
   width: 13px !important; height: 16px !important;
@@ -608,4 +619,18 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   content: ' *';
   color: #2934A4;
   margin-left: 2px;
+}
+
+/* Un párrafo que NO sea la nota legal se lee como el subtítulo del titular
+   ("Déjanos tus datos y te llega al instante." en el diseño original), así que
+   si se añade en ClickFunnels ya sale con el estilo correcto. */
+:is(#vista-form,.vsb-cf-form) .elParagraph:not(.vsb-cf-nota),
+:is(#vista-form,.vsb-cf-form) .elParagraph:not(.vsb-cf-nota) * {
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+  color: #5B6478 !important;
+  text-align: start !important;
+}
+:is(#vista-form,.vsb-cf-form) .elParagraph:not(.vsb-cf-nota) {
+  margin: -16px 0 24px 0 !important;   /* pega el subtítulo al titular */
 }
