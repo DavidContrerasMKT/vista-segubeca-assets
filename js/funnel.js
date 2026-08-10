@@ -307,7 +307,17 @@
       var vacio = !ph;
       var duplicaEtiqueta = textoEtiqueta && ph.toLowerCase() === textoEtiqueta;
 
-      if (vacio || duplicaEtiqueta) input.placeholder = EJEMPLOS_CF[name];
+      /* El campo de teléfono lo monta la librería intl-tel-input, que le pone
+         sola un número de ejemplo del país ("222 123 4567"). Eso no duplica la
+         etiqueta, así que las dos reglas de arriba lo dejaban pasar. Un
+         placeholder hecho SOLO de dígitos y separadores es siempre ese ejemplo
+         automático, nunca algo que alguien escribiría a mano — por eso se puede
+         reemplazar sin miedo. Un texto con letras sí se respeta. */
+      var esNumeroAutomatico = /^[\d\s()+.-]+$/.test(ph);
+
+      if (vacio || duplicaEtiqueta || esNumeroAutomatico) {
+        input.placeholder = EJEMPLOS_CF[name];
+      }
     });
   }
 
