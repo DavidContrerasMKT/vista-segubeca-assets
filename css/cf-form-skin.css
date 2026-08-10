@@ -52,10 +52,25 @@
   padding: clamp(28px, 4vw, 64px) clamp(16px, 3vw, 48px) !important;
   align-items: center !important;
 }
-#vista-hero-section > [class*="col-"] {
+/* El :not(#vista-card) NO es opcional: `.col-md-6` casa con [class*="col-"],
+   así que sin excluir la tarjeta esta regla le borraba el crema. Es el mismo
+   error que ya había pasado en la fila del formulario. */
+#vista-hero-section > [class*="col-"]:not(#vista-card) {
   padding-left: clamp(10px, 1.6vw, 26px) !important;
   padding-right: clamp(10px, 1.6vw, 26px) !important;
   background: transparent !important;
+}
+#vista-hero-section > #vista-card {
+  /* Dentro del hero la tarjeta es la COLUMNA derecha, no una tarjeta centrada:
+     el tope de 620px la dejaría angosta al lado de la portada. */
+  max-width: none !important;
+  padding: clamp(24px, 2.6vw, 44px) !important;
+  /* SIN márgenes laterales. La tarjeta es una columna flex del 50%: sumarle
+     márgenes hace que las dos columnas pasen del 100% y flex-wrap las apila,
+     una debajo de la otra. La separación con la portada la da el padding
+     derecho de la columna izquierda. */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 /* En pantallas chicas las dos columnas se apilan y la portada va primero. */
 @media (max-width: 860px) {
@@ -113,7 +128,7 @@
    -------------------------------------------------------------------------- */
 #vista-card {
   box-sizing: border-box !important;   /* si no, 620 + 56*2 de padding = 732 */
-  max-width: 620px !important;
+  max-width: 620px !important;         /* se anula dentro del hero, ver abajo */
   margin-left: auto !important;
   margin-right: auto !important;
   background: #F6F1E7 !important;
@@ -142,7 +157,10 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   padding: 0 !important;
-  margin: 0 !important;
+  /* Aire entre lo que va arriba (el titular en el hero, o el título de la
+     tarjeta) y el primer campo. Sin esto la etiqueta "Nombre" queda pegada al
+     titular. */
+  margin: clamp(20px, 2vw, 30px) 0 0 0 !important;
   width: 100% !important;
   max-width: none !important;
 }
