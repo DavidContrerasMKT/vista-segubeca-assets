@@ -177,12 +177,21 @@ body:has(> .vsb) { margin: 0; }
   width: 100% !important; max-width: none !important;
   margin: 0 !important; padding: 0 !important;
 }
-.row:has(.vsb) > [class*="col-"] {
+/* El padding se anula en TODAS las columnas, pero el ancho al 100% solo si la
+   columna está sola. Sin el :only-child una Row de dos columnas —la del hero,
+   con la portada a la izquierda y la tarjeta a la derecha— se apilaba, porque
+   ambas columnas quedaban al 100%. */
+.row:has(.vsb) > [class*="col-"] { padding: 0 !important; }
+.row:has(.vsb) > [class*="col-"]:only-child {
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
-  padding: 0 !important;
 }
 .col-inner:has(.vsb) { margin: 0 !important; }
 .elCustomHtmlJs:has(.vsb) { margin-top: 0 !important; margin-bottom: 0 !important; }
+
+/* Variante sin fondo, para las piezas que se pegan DENTRO de un contenedor de
+   ClickFunnels que ya trae su propio color (la tarjeta crema del hero, por
+   ejemplo). Sin esto el arena de `.vsb` se pintaría encima de la tarjeta. */
+.vsb.is-plain { background: transparent !important; }
 
 .vsb, .vsb *, .vsb *::before, .vsb *::after { box-sizing: border-box; }
 .vsb {

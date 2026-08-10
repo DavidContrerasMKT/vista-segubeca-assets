@@ -39,6 +39,30 @@
    Le da la superficie arena del diseño y el aire de arriba y abajo, para que
    se lea como una continuación del hero y no como un bloque pegado aparte.
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   0aa · La FILA del hero (portada + tarjeta con el formulario)
+   CSS ID `vista-hero-section` en la Row de dos columnas.
+   -------------------------------------------------------------------------- */
+#vista-hero-section {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #EAE1D0 !important;
+  padding: clamp(28px, 4vw, 64px) clamp(16px, 3vw, 48px) !important;
+  align-items: center !important;
+}
+#vista-hero-section > [class*="col-"] {
+  padding-left: clamp(10px, 1.6vw, 26px) !important;
+  padding-right: clamp(10px, 1.6vw, 26px) !important;
+  background: transparent !important;
+}
+/* En pantallas chicas las dos columnas se apilan y la portada va primero. */
+@media (max-width: 860px) {
+  #vista-hero-section { flex-direction: column !important; }
+  #vista-hero-section > [class*="col-"] { width: 100% !important; flex-basis: 100% !important; }
+}
+
 #vista-form-section {
   box-sizing: border-box !important;
   /* A todo lo ancho, igual que las bandas del bloque HTML. La Row de CF viene
