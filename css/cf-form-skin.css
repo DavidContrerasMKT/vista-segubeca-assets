@@ -619,11 +619,13 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
 
 /* Asterisco de obligatorio, como el <span class="vsb-req"> del original.
    Los tres campos visibles son obligatorios. */
-/* El asterisco va en .labelText, no en .elLabel: la etiqueta de CF es un <div>
-   que contiene otro <div> de bloque, así que un ::after suyo caía en su propio
-   renglón debajo del texto. */
-:is(#vista-form,.vsb-cf-form) .elLabel .labelText::after,
-:is(#vista-form,.vsb-cf-form) .elLabel:not(:has(.labelText))::after {
+/* El asterisco tiene que ir en el elemento que REALMENTE contiene el texto.
+   CF anida <div.elLabel> > <div.labelText> > <label>, todos de bloque: un
+   ::after en cualquiera de los de fuera caía en su propio renglón debajo.
+   Los tres selectores cubren las tres formas en que CF arma la etiqueta. */
+:is(#vista-form,.vsb-cf-form) .elLabel label::after,
+:is(#vista-form,.vsb-cf-form) .elLabel .labelText:not(:has(label))::after,
+:is(#vista-form,.vsb-cf-form) .elLabel:not(:has(.labelText, label))::after {
   content: ' *';
   color: #2934A4;
   margin-left: 2px;
