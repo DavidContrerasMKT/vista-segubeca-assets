@@ -51,7 +51,7 @@
   overflow-x: clip !important;   /* red de seguridad contra scroll horizontal */
 }
 /* Las columnas de esa Row tampoco deben limitar el ancho. */
-#vista-form-section > [class*="col-"],
+#vista-form-section > [class*="col-"]:not(#vista-card),
 #vista-form-section .col-inner:not(#vista-card) {
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
   margin-left: 0 !important; margin-right: 0 !important;
@@ -118,13 +118,22 @@
    sin depender de que CF cambie el orden del DOM.
    El :not(input) es para no anular el estilo del campo si en alguna versión de
    CF la clase `elInput` sí cae en el <input>.                                */
+/* IMPORTANTE — en esta versión de ClickFunnels las clases `elFormItem`,
+   `elInput` e `inputHolder` van en el PROPIO <input>, no en un envoltorio.
+   Si se estilan como envoltorio (fondo transparente, sin borde, sin padding)
+   el campo se queda en una rayita subrayada. Por eso aquí SOLO se tocan las
+   clases que terminan en *Wrapper, que son envoltorios de verdad, y el campo
+   se estila por selector de ELEMENTO (input/select/textarea) más abajo — que
+   es a prueba de cambios de nombre de clase.
+
+   El envoltorio va en columna y la etiqueta con order:-1 para que salga
+   ARRIBA del campo: CF la escribe DESPUÉS del input en el DOM y encima la
+   superpone con su propio CSS de etiqueta flotante. */
 #vista-form .elFormItemWrapper,
-#vista-form .elFormItem,
-#vista-form .inputHolder,
-#vista-form .elInputWrapper,
-#vista-form :not(input):not(select):not(textarea).elInput {
+#vista-form .elInputWrapper {
   display: flex !important;
   flex-direction: column !important;
+  align-items: stretch !important;
   margin-bottom: 18px !important;
   background: transparent !important;
   border: 0 !important;
@@ -132,8 +141,17 @@
   box-shadow: none !important;
   border-radius: 0 !important;
 }
+/* La etiqueta: estática (CF la posiciona encima del campo) y de primera. */
 #vista-form .elLabel,
-#vista-form label { order: -1 !important; }
+#vista-form label {
+  order: -1 !important;
+  position: static !important;
+  float: none !important;
+  transform: none !important;
+  top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+  width: auto !important;
+  pointer-events: auto !important;
+}
 
 /* --------------------------------------------------------------------------
    2 · Etiquetas — FUERA del campo, como en la referencia que mandaste
@@ -162,17 +180,11 @@
 /* --------------------------------------------------------------------------
    3 · Campos
    -------------------------------------------------------------------------- */
-/* Solo elementos de formulario REALES. `.elInput` se quitó de esta lista a
-   propósito: en CF esa clase vive en el envoltorio (ver arriba) y al estilarla
-   como campo aparecían dos cajas anidadas. */
-#vista-form input[type="text"],
-#vista-form input[type="email"],
-#vista-form input[type="tel"],
-#vista-form input[type="number"],
-#vista-form input:not([type]),
+/* El campo, por selector de ELEMENTO: da igual qué clases le ponga CF.
+   Se excluyen los ocultos y los de envío para no pisarlos. */
+#vista-form input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
 #vista-form select,
-#vista-form textarea,
-#vista-form input.elFormInput {
+#vista-form textarea {
   display: block !important;
   width: 100% !important;
   height: auto !important;
@@ -230,9 +242,12 @@
   width: auto !important;
   display: flex !important; align-items: center !important;
 }
-#vista-form input.iti__tel-input,
-#vista-form .iti input[type="text"],
-#vista-form .iti input[type="tel"] { padding-left: 62px !important; }
+/* La cadena de :not() se repite a propósito. La regla de campo de arriba
+   lleva cinco :not([type=...]) y cada uno suma especificidad, así que sin
+   repetirlos aquí esa regla le ganaba a este padding y el número se escribía
+   debajo de la bandera. Mismo peso + una clase extra = esta gana. */
+#vista-form input.iti__tel-input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+#vista-form .iti input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]) { padding-left: 62px !important; }
 #vista-form .iti__country-container {
   order: 0 !important;
   z-index: 2 !important;
