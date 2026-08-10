@@ -71,7 +71,15 @@
   max-width: none !important;
   margin: 0 !important;
   background: #EAE1D0 !important;
-  padding: clamp(28px, 4vw, 64px) clamp(16px, 3vw, 48px) !important;
+  /* El COLOR sangra a todo lo ancho, pero el CONTENIDO se limita a 1240px y se
+     centra — igual que `.vsb-shell` en el diseño original. Sin esto la Row de CF
+     mide 1870px, la tarjeta sale a ~900px en vez de ~628px y el titular parte
+     en 3 líneas en lugar de 4. El max() mantiene un padding mínimo en pantallas
+     angostas. */
+  padding-top: clamp(28px, 4vw, 64px) !important;
+  padding-bottom: clamp(28px, 4vw, 64px) !important;
+  padding-left: max(clamp(16px, 3vw, 48px), calc((100% - 1240px) / 2)) !important;
+  padding-right: max(clamp(16px, 3vw, 48px), calc((100% - 1240px) / 2)) !important;
   align-items: center !important;
 }
 /* El :not(:is(#vista-card,.vsb-cf-card)) NO es opcional: `.col-md-6` casa con [class*="col-"],
