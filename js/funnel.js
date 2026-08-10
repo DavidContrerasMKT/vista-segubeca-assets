@@ -348,7 +348,7 @@
      ====================================================================== */
   var EJEMPLOS_CF = [
     { etiqueta: /hij|niet/i,            name: /hijo.*nombre|nombre.*hijo/i, ejemplo: 'Emilia' },
-    { etiqueta: /^su edad|edad de (?:su|l)/i, name: /hijo.*edad/i,          ejemplo: '7' },
+    { etiqueta: /^su edad|edad de (?:su|l)/i, name: /hijo.*edad/i,          ejemplo: '4' },
     { etiqueta: /tu edad|edad actual/i, name: /titular.*edad|tu.*edad/i,    ejemplo: '38' },
     { etiqueta: /whats|tel[eé]f/i,      name: /phone|whats|tel/i,           ejemplo: '81 1234 5678' },
     { etiqueta: /correo|e-?mail/i,      name: /email|correo/i,              ejemplo: 'maria@correo.com' },
