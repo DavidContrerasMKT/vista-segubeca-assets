@@ -433,6 +433,9 @@
   padding: 20px 34px !important;
   border: 0 !important;
   border-radius: 999px !important;
+  /* 59.5px es el alto exacto del botón del diseño: allí la flecha es un <span>
+     en línea y su interlineado engorda la caja 0.86px más que el flex de CF. */
+  min-height: 59.5px !important;
   background: #7B8AFF !important;
   background-image: none !important;
   color: #FFFFFF !important;
