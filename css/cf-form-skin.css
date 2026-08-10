@@ -195,10 +195,13 @@
    1 · Contenedor del formulario
    -------------------------------------------------------------------------- */
 :is(#vista-form,.vsb-cf-form),
-:is(#vista-form,.vsb-cf-form) * {
+:is(#vista-form,.vsb-cf-form) *:not([class*="fa-"]):not(.elButtonSpinner) {
   font-family: 'Brandon Grotesque', 'Futura', 'Century Gothic', sans-serif !important;
   box-sizing: border-box !important;
 }
+/* Los iconos de Font Awesome se quedan con SU tipografía: son puntos de código
+   privados, y con Brandon Grotesque salían como un rombo suelto en el botón. */
+:is(#vista-form,.vsb-cf-form) [class*="fa-"] { box-sizing: border-box !important; }
 
 /* El <form> mismo va SIN decoración.
    Cuando el CSS ID se pone en un elemento que CF trata como Row, hereda el
@@ -441,8 +444,11 @@
   box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(123,138,255,.34) !important;
   transition: transform .18s ease, background-color .18s ease !important;
 }
-:is(#vista-form,.vsb-cf-form) .elButtonText,
-#vista-button .elButtonText {
+/* El :not(.elButtonSpinner) es lo que impide que reaparezca el rombo: el <i>
+   del spinner también lleva la clase .elButtonText, y CF lo tiene en
+   display:none hasta que el botón entra en estado de carga. */
+:is(#vista-form,.vsb-cf-form) .elButtonText:not(.elButtonSpinner),
+#vista-button .elButtonText:not(.elButtonSpinner) {
   /* CF le pone al <span> su propio interlineado y padding, y el botón salía
      73px de alto contra los 60px del diseño. */
   line-height: 1.1 !important;
