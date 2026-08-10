@@ -322,10 +322,120 @@
   }
 
   /* ======================================================================
-     8 · Arranque
+     8 · Marcar la estructura de ClickFunnels por CONTENIDO, no por CSS ID
+
+     Pedir que se pongan CSS IDs a mano en la Row y la columna correctas resultó
+     poco fiable: en el editor de CF es fácil seleccionar la Row creyendo que es
+     la columna, y al primer descuido la tarjeta crema se dibuja alrededor de la
+     portada en vez del formulario. Pasó tres veces.
+
+     Así que el CSS ya no depende de eso. Aquí se etiqueta la estructura a partir
+     de lo que cada contenedor CONTIENE, que es la única señal fiable:
+
+       .vsb-cf-hero     la Row que contiene la portada
+       .vsb-cf-card     la columna que contiene el titular o el formulario
+       .vsb-cf-form     el <form> nativo de CF de verdad
+       .vsb-cf-formrow  la Row del formulario, cuando va en una Row propia
+
+     Los CSS ID siguen funcionando si están bien puestos: esto es adicional, no
+     un reemplazo. Y funciona con el formulario dentro de la tarjeta o en su
+     propia fila, sin tener que reacomodar nada en ClickFunnels.
+     ====================================================================== */
+  function marcarEstructuraCF() {
+    var enCF = document.querySelector('.row, [class*="col-"]');
+    if (!enCF) return;   // página suelta: no hay nada que marcar
+
+    var col = function (el) { return el && el.closest('[class*="col-"]'); };
+    var fila = function (el) { return el && el.closest('.row'); };
+
+    /* ---- Primero: quitar los CSS ID que estén en el elemento equivocado ----
+       Un `vista-hero-section` puesto en una columna recibe el estilo de FILA
+       (ancho 100%, franja arena) y hace que las dos columnas se apilen. Y un
+       `vista-card` en la columna de la portada dibuja la tarjeta crema
+       alrededor de la portada.
+
+       Como el marcado por contenido de abajo ya no necesita ningún ID, lo más
+       seguro es retirar los que están mal puestos en lugar de pelear con ellos.
+       Los que estén bien puestos se quedan tal cual. */
+    var portadaTmp = document.querySelector('.vsb-guia-3d, .vsb-guia-img');
+    var formTmp = null;
+    var todosForms = document.querySelectorAll('form');
+    for (var f = 0; f < todosForms.length; f++) {
+      if (todosForms[f].querySelector('input[type="text"], input[type="email"], input[type="tel"]')) {
+        formTmp = todosForms[f]; break;
+      }
+    }
+    var esFila = function (el) { return el && el.classList.contains('row'); };
+    var esColumna = function (el) { return el && /col-/.test(String(el.className)); };
+
+    var reglas = [
+      // id,                   debe ser…                                         debe contener…
+      ['vista-hero-section',   esFila,    portadaTmp],
+      ['vista-form-section',   esFila,    formTmp],
+      ['vista-card',           esColumna, formTmp || document.querySelector('.vsb-display')],
+      ['vista-form',           function (el) { return el && el.tagName === 'FORM'; }, null],
+    ];
+
+    reglas.forEach(function (r) {
+      var el = document.getElementById(r[0]);
+      if (!el) return;
+      var tipoOk = r[1](el);
+      var contieneOk = r[2] ? el.contains(r[2]) : true;
+      // La fila del hero no debe ser también la del formulario suelto.
+      if (r[0] === 'vista-form-section' && portadaTmp && el.contains(portadaTmp)) contieneOk = false;
+      if (!tipoOk || !contieneOk) {
+        el.removeAttribute('id');
+        if (window.console && console.info) {
+          console.info('[Vista] Quité el CSS ID "' + r[0] +
+            '" porque estaba en el elemento equivocado. El estilo ahora se aplica por estructura, no hace falta ningún ID.');
+        }
+      }
+    });
+
+    /* La Row del hero es la que lleva la portada de la guía. */
+    var portada = document.querySelector('.vsb-guia-3d, .vsb-guia-img');
+    var filaHero = fila(portada);
+    if (filaHero) filaHero.classList.add('vsb-cf-hero');
+    var colPortada = col(portada);
+    if (colPortada) colPortada.classList.add('vsb-cf-cover-col');
+
+    /* El formulario de CF: el único <form> con un campo visible de verdad.
+       CF mete varios <form> ocultos para su propio seguimiento. */
+    var forms = Array.prototype.slice.call(document.querySelectorAll('form'));
+    var form = null;
+    for (var i = 0; i < forms.length; i++) {
+      var campos = forms[i].querySelectorAll('input');
+      for (var j = 0; j < campos.length; j++) {
+        var c = campos[j];
+        var visible = c.offsetParent !== null;
+        var util = ['text', 'email', 'tel', 'number'].indexOf(c.type) !== -1;
+        if (visible && util) { form = forms[i]; break; }
+      }
+      if (form) break;
+    }
+    if (form) {
+      form.classList.add('vsb-cf-form');
+      var colForm = col(form);
+      if (colForm) colForm.classList.add('vsb-cf-card');
+      var filaForm = fila(form);
+      /* Si el formulario NO está en la Row del hero, su Row se pinta como una
+         franja aparte con la tarjeta centrada. */
+      if (filaForm && filaForm !== filaHero) filaForm.classList.add('vsb-cf-formrow');
+    }
+
+    /* La columna del titular también es tarjeta: cubre el caso de que el
+       formulario todavía no se haya movido dentro. */
+    var titular = document.querySelector('.vsb-prehead, .vsb-display');
+    var colTitular = col(titular);
+    if (colTitular && colTitular !== colPortada) colTitular.classList.add('vsb-cf-card');
+  }
+
+  /* ======================================================================
+     9 · Arranque
      ====================================================================== */
   function arrancar() {
     personalize();
+    marcarEstructuraCF();
     ejemplosEnFormularioCF();
   }
 
@@ -338,6 +448,7 @@
   /* ClickFunnels monta el campo de teléfono con una librería que reconstruye el
      input después de cargar, y al hacerlo le devuelve su placeholder. Dos
      pasadas más lo dejan bien; son idempotentes, así que no pisan nada. */
-  setTimeout(ejemplosEnFormularioCF, 600);
-  setTimeout(ejemplosEnFormularioCF, 1800);
+  function reintentar() { marcarEstructuraCF(); ejemplosEnFormularioCF(); }
+  setTimeout(reintentar, 600);
+  setTimeout(reintentar, 1800);
 })();

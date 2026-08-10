@@ -39,11 +39,18 @@
    Le da la superficie arena del diseño y el aire de arriba y abajo, para que
    se lea como una continuación del hero y no como un bloque pegado aparte.
    -------------------------------------------------------------------------- */
+/* La columna de la portada nunca lleva tarjeta, la marque quien la marque. */
+.vsb-cf-cover-col {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
 /* --------------------------------------------------------------------------
    0aa · La FILA del hero (portada + tarjeta con el formulario)
    CSS ID `vista-hero-section` en la Row de dos columnas.
    -------------------------------------------------------------------------- */
-#vista-hero-section {
+:is(#vista-hero-section,.vsb-cf-hero) {
   box-sizing: border-box !important;
   width: 100% !important;
   max-width: none !important;
@@ -52,15 +59,15 @@
   padding: clamp(28px, 4vw, 64px) clamp(16px, 3vw, 48px) !important;
   align-items: center !important;
 }
-/* El :not(#vista-card) NO es opcional: `.col-md-6` casa con [class*="col-"],
+/* El :not(:is(#vista-card,.vsb-cf-card)) NO es opcional: `.col-md-6` casa con [class*="col-"],
    así que sin excluir la tarjeta esta regla le borraba el crema. Es el mismo
    error que ya había pasado en la fila del formulario. */
-#vista-hero-section > [class*="col-"]:not(#vista-card) {
+:is(#vista-hero-section,.vsb-cf-hero) > [class*="col-"]:not(:is(#vista-card,.vsb-cf-card)) {
   padding-left: clamp(10px, 1.6vw, 26px) !important;
   padding-right: clamp(10px, 1.6vw, 26px) !important;
   background: transparent !important;
 }
-#vista-hero-section > #vista-card {
+:is(#vista-hero-section,.vsb-cf-hero) > :is(#vista-card,.vsb-cf-card) {
   /* Dentro del hero la tarjeta es la COLUMNA derecha, no una tarjeta centrada:
      el tope de 620px la dejaría angosta al lado de la portada. */
   max-width: none !important;
@@ -74,11 +81,11 @@
 }
 /* En pantallas chicas las dos columnas se apilan y la portada va primero. */
 @media (max-width: 860px) {
-  #vista-hero-section { flex-direction: column !important; }
-  #vista-hero-section > [class*="col-"] { width: 100% !important; flex-basis: 100% !important; }
+  :is(#vista-hero-section,.vsb-cf-hero) { flex-direction: column !important; }
+  :is(#vista-hero-section,.vsb-cf-hero) > [class*="col-"] { width: 100% !important; flex-basis: 100% !important; }
 }
 
-#vista-form-section {
+:is(#vista-form-section,.vsb-cf-formrow) {
   box-sizing: border-box !important;
   /* A todo lo ancho, igual que las bandas del bloque HTML. La Row de CF viene
      con 1170px; sin esto la franja arena se corta y queda blanco a un lado. */
@@ -90,18 +97,18 @@
   overflow-x: clip !important;   /* red de seguridad contra scroll horizontal */
 }
 /* Las columnas de esa Row tampoco deben limitar el ancho. */
-#vista-form-section > [class*="col-"]:not(#vista-card),
-#vista-form-section .col-inner:not(#vista-card) {
+:is(#vista-form-section,.vsb-cf-formrow) > [class*="col-"]:not(:is(#vista-card,.vsb-cf-card)),
+:is(#vista-form-section,.vsb-cf-formrow) .col-inner:not(:is(#vista-card,.vsb-cf-card)) {
   width: 100% !important; max-width: none !important; flex-basis: 100% !important;
   margin-left: 0 !important; margin-right: 0 !important;
   padding-left: 0 !important; padding-right: 0 !important;
 }
 /* Fondo transparente a los envoltorios de CF para que se vea el arena de la
    fila — PERO no a la tarjeta. `.col-inner` casa con [class*="col-"], así que
-   sin el :not() esta regla le borraba el crema a #vista-card. */
-#vista-form-section > *:not(#vista-card),
-#vista-form-section .row:not(#vista-card),
-#vista-form-section [class*="col-"]:not(#vista-card) {
+   sin el :not() esta regla le borraba el crema a :is(#vista-card,.vsb-cf-card). */
+:is(#vista-form-section,.vsb-cf-formrow) > *:not(:is(#vista-card,.vsb-cf-card)),
+:is(#vista-form-section,.vsb-cf-formrow) .row:not(:is(#vista-card,.vsb-cf-card)),
+:is(#vista-form-section,.vsb-cf-formrow) [class*="col-"]:not(:is(#vista-card,.vsb-cf-card)) {
   background: transparent !important;
 }
 
@@ -126,7 +133,7 @@
    Ponle a la FILA o COLUMNA que envuelve el formulario el CSS ID `vista-card`
    para que se vea como el cuadro crema del diseño.
    -------------------------------------------------------------------------- */
-#vista-card {
+:is(#vista-card,.vsb-cf-card) {
   box-sizing: border-box !important;   /* si no, 620 + 56*2 de padding = 732 */
   max-width: 620px !important;         /* se anula dentro del hero, ver abajo */
   margin-left: auto !important;
@@ -141,8 +148,8 @@
 /* --------------------------------------------------------------------------
    1 · Contenedor del formulario
    -------------------------------------------------------------------------- */
-#vista-form,
-#vista-form * {
+:is(#vista-form,.vsb-cf-form),
+:is(#vista-form,.vsb-cf-form) * {
   font-family: 'Brandon Grotesque', 'Futura', 'Century Gothic', sans-serif !important;
   box-sizing: border-box !important;
 }
@@ -151,7 +158,7 @@
    Cuando el CSS ID se pone en un elemento que CF trata como Row, hereda el
    estilo de Row: radio de 55px y sombra. Eso dibujaba una segunda tarjeta
    redondeada DENTRO de la tarjeta crema — se veía como dos cajas anidadas. */
-#vista-form {
+:is(#vista-form,.vsb-cf-form) {
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -189,8 +196,8 @@
    El envoltorio va en columna y la etiqueta con order:-1 para que salga
    ARRIBA del campo: CF la escribe DESPUÉS del input en el DOM y encima la
    superpone con su propio CSS de etiqueta flotante. */
-#vista-form .elFormItemWrapper,
-#vista-form .elInputWrapper {
+:is(#vista-form,.vsb-cf-form) .elFormItemWrapper,
+:is(#vista-form,.vsb-cf-form) .elInputWrapper {
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
@@ -208,8 +215,8 @@
    del campo — es lo que se veía como "campo duplicado".
    Por eso hay que devolverle la altura automática y apagar la decoración de
    sus hijos, no solo cambiarle el order. */
-#vista-form .elLabel,
-#vista-form label {
+:is(#vista-form,.vsb-cf-form) .elLabel,
+:is(#vista-form,.vsb-cf-form) label {
   order: -1 !important;
   position: static !important;
   float: none !important;
@@ -228,8 +235,8 @@
   box-shadow: none !important;
 }
 /* Decoración interna de la etiqueta y restos del diseño de CF. */
-#vista-form .elLabel > *,
-#vista-form label > * {
+:is(#vista-form,.vsb-cf-form) .elLabel > *,
+:is(#vista-form,.vsb-cf-form) label > * {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -239,8 +246,8 @@
   margin: 0 !important;
 }
 /* CF deja un .inputHolder vacío y un .input-icon suelto; estorban. */
-#vista-form .elFormItemWrapper > .inputHolder:empty,
-#vista-form .elFormItemWrapper > .input-icon { display: none !important; }
+:is(#vista-form,.vsb-cf-form) .elFormItemWrapper > .inputHolder:empty,
+:is(#vista-form,.vsb-cf-form) .elFormItemWrapper > .input-icon { display: none !important; }
 
 /* --------------------------------------------------------------------------
    2 · Etiquetas — FUERA del campo, como en la referencia que mandaste
@@ -249,9 +256,9 @@
    opción de mostrar etiqueta ("Show Label" / "Etiqueta"). Si tu plan no la
    trae, ver la nota al final de este archivo.
    -------------------------------------------------------------------------- */
-#vista-form label,
-#vista-form .elLabel,
-#vista-form .elFormLabel {
+:is(#vista-form,.vsb-cf-form) label,
+:is(#vista-form,.vsb-cf-form) .elLabel,
+:is(#vista-form,.vsb-cf-form) .elFormLabel {
   display: block !important;
   order: -1 !important;
   /* CF suele escribirlas en MAYÚSCULAS desde su propio CSS; el diseño las
@@ -271,9 +278,9 @@
    -------------------------------------------------------------------------- */
 /* El campo, por selector de ELEMENTO: da igual qué clases le ponga CF.
    Se excluyen los ocultos y los de envío para no pisarlos. */
-#vista-form input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-#vista-form select,
-#vista-form textarea {
+:is(#vista-form,.vsb-cf-form) input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+:is(#vista-form,.vsb-cf-form) select,
+:is(#vista-form,.vsb-cf-form) textarea {
   display: block !important;
   width: 100% !important;
   height: auto !important;
@@ -292,22 +299,22 @@
 }
 
 /* El ejemplo dentro del campo, en tono claro */
-#vista-form ::placeholder { color: #A9AEBC !important; opacity: 1 !important; }
+:is(#vista-form,.vsb-cf-form) ::placeholder { color: #A9AEBC !important; opacity: 1 !important; }
 
-#vista-form input:hover,
-#vista-form select:hover,
-#vista-form textarea:hover { border-color: rgba(27,33,80,.26) !important; }
+:is(#vista-form,.vsb-cf-form) input:hover,
+:is(#vista-form,.vsb-cf-form) select:hover,
+:is(#vista-form,.vsb-cf-form) textarea:hover { border-color: rgba(27,33,80,.26) !important; }
 
-#vista-form input:focus,
-#vista-form select:focus,
-#vista-form textarea:focus {
+:is(#vista-form,.vsb-cf-form) input:focus,
+:is(#vista-form,.vsb-cf-form) select:focus,
+:is(#vista-form,.vsb-cf-form) textarea:focus {
   outline: none !important;
   border-color: #7B8AFF !important;
   box-shadow: 0 0 0 4px rgba(123,138,255,.24) !important;
 }
 
 /* Flecha propia para los desplegables */
-#vista-form select {
+:is(#vista-form,.vsb-cf-form) select {
   padding-right: 46px !important;
   cursor: pointer !important;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="9" viewBox="0 0 14 9"><path d="M1 1l6 6 6-6" fill="none" stroke="%235B6478" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>') !important;
@@ -324,8 +331,8 @@
    país en absolute encima del input. Se declara aquí para no depender de que
    el CSS de la librería haya cargado ni del orden en que lo haga: sin esto el
    "MX +52" se apila como un bloque arriba del campo. */
-#vista-form .iti { display: block !important; width: 100% !important; position: relative !important; }
-#vista-form .iti__country-container {
+:is(#vista-form,.vsb-cf-form) .iti { display: block !important; width: 100% !important; position: relative !important; }
+:is(#vista-form,.vsb-cf-form) .iti__country-container {
   position: absolute !important;
   top: 0 !important; bottom: 0 !important; left: 0 !important;
   width: auto !important;
@@ -335,18 +342,18 @@
    lleva cinco :not([type=...]) y cada uno suma especificidad, así que sin
    repetirlos aquí esa regla le ganaba a este padding y el número se escribía
    debajo de la bandera. Mismo peso + una clase extra = esta gana. */
-#vista-form input.iti__tel-input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-#vista-form .iti input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]) { padding-left: 62px !important; }
-#vista-form .iti__country-container {
+:is(#vista-form,.vsb-cf-form) input.iti__tel-input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+:is(#vista-form,.vsb-cf-form) .iti input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]) { padding-left: 62px !important; }
+:is(#vista-form,.vsb-cf-form) .iti__country-container {
   order: 0 !important;
   z-index: 2 !important;
 }
-#vista-form .iti__selected-country { border-radius: 14px 0 0 14px !important; }
+:is(#vista-form,.vsb-cf-form) .iti__selected-country { border-radius: 14px 0 0 14px !important; }
 
 /* CF a veces envuelve el input en una caja con su propio borde: la apagamos
    para no terminar con dos bordes, uno dentro del otro. */
-#vista-form .inputHolder,
-#vista-form .elFormInputWrapper {
+:is(#vista-form,.vsb-cf-form) .inputHolder,
+:is(#vista-form,.vsb-cf-form) .elFormInputWrapper {
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -363,9 +370,9 @@
    etiqueta casi desaparece.
    Si algún día quieren blanco Y contraste: cambia el relleno a #2934A4 (9.9:1).
    -------------------------------------------------------------------------- */
-#vista-form button[type="submit"],
-#vista-form .elButton,
-#vista-form input[type="submit"],
+:is(#vista-form,.vsb-cf-form) button[type="submit"],
+:is(#vista-form,.vsb-cf-form) .elButton,
+:is(#vista-form,.vsb-cf-form) input[type="submit"],
 #vista-button .elButton,
 #vista-button a {
   display: flex !important;
@@ -388,29 +395,29 @@
   box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(123,138,255,.34) !important;
   transition: transform .18s ease, background-color .18s ease !important;
 }
-#vista-form .elButtonText,
+:is(#vista-form,.vsb-cf-form) .elButtonText,
 #vista-button .elButtonText {
   color: #FFFFFF !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
 }
-#vista-form button[type="submit"]:hover,
-#vista-form .elButton:hover,
+:is(#vista-form,.vsb-cf-form) button[type="submit"]:hover,
+:is(#vista-form,.vsb-cf-form) .elButton:hover,
 #vista-button .elButton:hover {
   background: #6272D3 !important;
   transform: translateY(-2px) !important;
 }
 /* CF mete un sub-texto bajo la etiqueta del botón; casi siempre estorba. */
-#vista-form .elButtonSub,
+:is(#vista-form,.vsb-cf-form) .elButtonSub,
 #vista-button .elButtonSub { display: none !important; }
 
 /* --------------------------------------------------------------------------
    5 · Mensajes de error de CF
    -------------------------------------------------------------------------- */
-#vista-form .elFormItemError,
-#vista-form .error,
-#vista-form .elError {
+:is(#vista-form,.vsb-cf-form) .elFormItemError,
+:is(#vista-form,.vsb-cf-form) .error,
+:is(#vista-form,.vsb-cf-form) .elError {
   margin-top: 7px !important;
   font-size: 15.04px !important;
   font-weight: 500 !important;
@@ -419,9 +426,9 @@
   border: 0 !important;
   padding: 0 !important;
 }
-#vista-form input.error,
-#vista-form .hasError input,
-#vista-form .hasError select {
+:is(#vista-form,.vsb-cf-form) input.error,
+:is(#vista-form,.vsb-cf-form) .hasError input,
+:is(#vista-form,.vsb-cf-form) .hasError select {
   border-color: #B3261E !important;
   box-shadow: 0 0 0 4px rgba(179,38,30,.14) !important;
 }
@@ -459,6 +466,6 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
    Es una solución de segunda: el lector de pantalla no la anuncia como
    etiqueta real. Úsala solo si no queda de otra.
 
-   #vista-form .elFormItemWrapper { position: relative; padding-top: 30px !important; }
-   #vista-form input::before { content: attr(placeholder); }
+   :is(#vista-form,.vsb-cf-form) .elFormItemWrapper { position: relative; padding-top: 30px !important; }
+   :is(#vista-form,.vsb-cf-form) input::before { content: attr(placeholder); }
    ========================================================================== */
