@@ -982,6 +982,27 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-hidden { display: none !important; }
 .vsb-divider { height: var(--hair); background: currentColor; opacity: .16; border: 0; margin: 0; }
 
+/* --------------------------------------------------------------------------
+   Banda de confirmación del envío (página 2)
+   Va fija arriba: al enviar, ClickFunnels manda la vista al inicio de la
+   página, así que ahí es donde la persona está mirando. Blanco sobre este
+   verde da 5.3:1, o sea AA.
+   -------------------------------------------------------------------------- */
+.vsb-aviso {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px clamp(16px, 3vw, 28px);
+  background: #1E7A5A; color: var(--white);
+  font-size: var(--t-small); font-weight: 700; letter-spacing: 0.02em;
+  text-align: center; text-wrap: balance;
+  box-shadow: 0 10px 30px rgba(27,33,80,.20);
+  transform: translateY(-100%);
+  transition: transform .34s cubic-bezier(.22,.61,.36,1);
+}
+.vsb-aviso.is-open { transform: none; }
+.vsb-aviso-icono { display: inline-flex; flex: none; }
+@media (prefers-reduced-motion: reduce) { .vsb-aviso { transition: none; } }
+
 /* Estado de envío del botón */
 .vsb-btn.is-loading { pointer-events: none; opacity: .72; }
 .vsb-btn.is-loading .vsb-arrow { animation: vsb-spin 0.9s linear infinite; }

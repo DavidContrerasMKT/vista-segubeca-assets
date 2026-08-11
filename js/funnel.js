@@ -652,20 +652,22 @@
   }
 
   /* ======================================================================
-     9b · Enviando → enviado, en el botón del formulario nativo de CF
+     9b · Confirmación del envío: la banda verde de arriba
 
-     El cliente pidió que la persona vea que sus datos salieron: rueda de carga
-     al enviar, y palomita en verde cuando el envío se completó.
+     El cliente pidió que la persona vea que sus datos salieron. La señal NO va
+     en el botón: el de ClickFunnels es un <a href="#submit-form">, así que al
+     enviar el navegador salta al inicio de la página y cualquier cosa que pase
+     junto al botón queda fuera de pantalla. Por eso se muestra una banda verde
+     fija arriba, que es justo donde queda mirando.
 
-     La señal es la RESPUESTA DE LA RED, no una animación a ciegas con un
-     temporizador: decirle "listo" a alguien cuyo envío falló es peor que no
-     decirle nada. Para eso se observan los POST —sin interceptarlos: se escucha
-     `loadend` en cada XHR y se encadena al `fetch`, siempre llamando al
-     original—, y solo un 2xx pinta el verde.
+     Lo que la dispara es la RESPUESTA DE LA RED, no un temporizador a ciegas:
+     decirle "listo" a alguien cuyo envío falló es peor que no decirle nada. Se
+     observan los POST sin interceptarlos —se escucha `loadend` en cada XHR y se
+     encadena al `fetch`, siempre devolviendo el original— y solo un 2xx la
+     muestra.
 
-     ▸ IMPORTANTE en ClickFunnels: para que la palomita se vea, el botón NO debe
-       tener "On Submit Go To". Con una redirección configurada, CF cambia de
-       página al instante y el verde alcanza a parpadear medio segundo.
+     ▸ IMPORTANTE en ClickFunnels: el botón NO debe tener "On Submit Go To". Con
+       una redirección configurada, CF cambia de página y no hay nada que ver.
      ====================================================================== */
   var ENVIO = { enCurso: false, boton: null, textoOriginal: '', reloj: null };
 
@@ -682,43 +684,53 @@
   function marcarEnviando(bt) {
     ENVIO.enCurso = true;
     ENVIO.boton = bt;
-    var t = textoDelBoton(bt);
-    ENVIO.textoOriginal = t.textContent;
-    t.textContent = 'Enviando…';
-    bt.classList.add('vsb-cf-enviando');
     bt.setAttribute('aria-busy', 'true');
 
-    /* Red de seguridad: si no llega ninguna respuesta, se devuelve el botón a
-       su estado normal para que se pueda reintentar. Nunca se da por bueno un
-       envío que no confirmó nadie. */
+    /* Red de seguridad: si no llega ninguna respuesta, se libera el botón para
+       poder reintentar. Nunca se da por bueno un envío que nadie confirmó. */
     ENVIO.reloj = setTimeout(function () {
-      if (ENVIO.enCurso) restaurarBoton('[Vista] El envío no respondió en 20s: el botón vuelve a su estado normal.');
+      if (ENVIO.enCurso) restaurarBoton('[Vista] El envío no respondió en 20s: el botón queda libre para reintentar.');
     }, 20000);
   }
 
   function restaurarBoton(aviso) {
     if (!ENVIO.boton) return;
     clearTimeout(ENVIO.reloj);
-    var bt = ENVIO.boton;
-    bt.classList.remove('vsb-cf-enviando');
-    bt.removeAttribute('aria-busy');
-    if (ENVIO.textoOriginal) textoDelBoton(bt).textContent = ENVIO.textoOriginal;
+    ENVIO.boton.removeAttribute('aria-busy');
     ENVIO.enCurso = false;
     ENVIO.boton = null;
     if (aviso) console.warn(aviso);
   }
 
   function marcarEnviado() {
-    if (!ENVIO.boton) return;
     clearTimeout(ENVIO.reloj);
-    var bt = ENVIO.boton;
-    bt.classList.remove('vsb-cf-enviando');
-    bt.classList.add('vsb-cf-enviado');
-    bt.removeAttribute('aria-busy');
-    textoDelBoton(bt).textContent = '¡Listo! Recibimos tus datos';
-    /* Que un lector de pantalla lo anuncie, no solo el color. */
-    bt.setAttribute('role', 'status');
+    if (ENVIO.boton) {
+      /* Bloqueado para que nadie mande el formulario dos veces. */
+      ENVIO.boton.classList.add('vsb-cf-enviado');
+      ENVIO.boton.removeAttribute('aria-busy');
+    }
     ENVIO.enCurso = false;
+    mostrarAviso();
+  }
+
+  /** Muestra la banda verde de confirmación. */
+  function mostrarAviso() {
+    var aviso = document.getElementById('vsb-aviso-proyeccion') ||
+                document.querySelector('.vsb-aviso');
+    if (!aviso || aviso.classList.contains('is-open')) return;
+
+    aviso.hidden = false;
+    /* Un fotograma de espera: si se quita `hidden` y se abre en el mismo, el
+       navegador no tiene desde dónde animar y la banda aparece de golpe. */
+    if (window.requestAnimationFrame) {
+      requestAnimationFrame(function () { aviso.classList.add('is-open'); });
+    } else {
+      aviso.classList.add('is-open');
+    }
+
+    /* ClickFunnels ya sube la vista al inicio al enviar, pero si algún día deja
+       de hacerlo la confirmación tiene que verse igual. */
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
   }
 
   /** ¿Están llenos los campos obligatorios que se ven? Si no, no se bloquea el

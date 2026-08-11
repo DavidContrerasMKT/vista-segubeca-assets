@@ -730,55 +730,17 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
 }
 
 /* --------------------------------------------------------------------------
-   8 · Estados de envío del botón: enviando → enviado
-   Lo pidió el cliente: que la persona vea que sus datos salieron. Sin esto, el
-   botón de ClickFunnels se queda igual y no hay señal de nada.
-   Las clases las pone funnel.js §10 cuando detecta el POST y su respuesta.
+   8 · Tras un envío correcto, el botón queda fuera de juego
+
+   La confirmación visible NO va aquí: el botón de ClickFunnels es un
+   <a href="#submit-form">, así que al enviar el navegador salta al inicio de la
+   página y cualquier señal puesta en el botón queda fuera de pantalla. Por eso
+   la confirmación es la banda verde de arriba (.vsb-aviso), y aquí solo se
+   bloquea el botón para que nadie envíe dos veces.
    -------------------------------------------------------------------------- */
-@keyframes vsb-girar { to { transform: rotate(360deg); } }
-
-:is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviando,
-#vista-button .elButton.vsb-cf-enviando {
-  pointer-events: none !important;
-  cursor: default !important;
-}
-/* Rueda de carga dibujada con un borde: no depende de ningún icono externo. */
-:is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviando::before,
-#vista-button .elButton.vsb-cf-enviando::before {
-  content: '' !important;
-  width: 17px !important; height: 17px !important;
-  margin-right: 11px !important;
-  border-radius: 50% !important;
-  border: 2px solid rgba(255,255,255,.38) !important;
-  border-top-color: #FFFFFF !important;
-  animation: vsb-girar .8s linear infinite !important;
-  flex: none !important;
-}
-
-/* Enviado: verde y palomita. Blanco sobre este verde da 5.3:1, o sea AA. */
 :is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviado,
 #vista-button .elButton.vsb-cf-enviado {
-  background: #1E7A5A !important;
-  box-shadow: 0 2px 4px rgba(27,33,80,.10), 0 14px 30px rgba(30,122,90,.28) !important;
   pointer-events: none !important;
   cursor: default !important;
-}
-:is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviado::before,
-#vista-button .elButton.vsb-cf-enviado::before {
-  content: '' !important;
-  width: 19px !important; height: 19px !important;
-  margin-right: 11px !important;
-  flex: none !important;
-  background: no-repeat center/contain
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M2.5 10l4.6 4.6L16.5 5" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>') !important;
-}
-
-/* En los dos estados la flecha estorba: es un „ir a” y aquí ya no se va a
-   ningún lado. */
-:is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviando .elButtonMainText::after,
-:is(#vista-form,.vsb-cf-form) .elButton.vsb-cf-enviado .elButtonMainText::after,
-#vista-button .elButton.vsb-cf-enviando .elButtonMainText::after,
-#vista-button .elButton.vsb-cf-enviado .elButtonMainText::after {
-  content: '' !important;
-  margin-left: 0 !important;
+  opacity: .55 !important;
 }
