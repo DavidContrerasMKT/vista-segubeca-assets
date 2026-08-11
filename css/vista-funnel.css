@@ -836,6 +836,10 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   margin: 0 auto clamp(16px, 1.8cqw, 22px); max-width: 30ch;
   font-size: clamp(24px, 14px + 1.6cqw, 38px);
 }
+/* El botón del video salta al formulario: que el desplazamiento se vea. */
+:where(html) { scroll-behavior: smooth; }
+#proyeccion { scroll-margin-top: 24px; }
+.vsb-video-cta     { display: flex; justify-content: center; margin-top: clamp(20px, 2.4cqw, 28px); }
 .vsb-video-note    { margin: clamp(22px, 2.6cqw, 30px) auto 0; max-width: 62ch; }
 
 /* ==========================================================================

@@ -652,6 +652,153 @@
   }
 
   /* ======================================================================
+     9b · Enviando → enviado, en el botón del formulario nativo de CF
+
+     El cliente pidió que la persona vea que sus datos salieron: rueda de carga
+     al enviar, y palomita en verde cuando el envío se completó.
+
+     La señal es la RESPUESTA DE LA RED, no una animación a ciegas con un
+     temporizador: decirle "listo" a alguien cuyo envío falló es peor que no
+     decirle nada. Para eso se observan los POST —sin interceptarlos: se escucha
+     `loadend` en cada XHR y se encadena al `fetch`, siempre llamando al
+     original—, y solo un 2xx pinta el verde.
+
+     ▸ IMPORTANTE en ClickFunnels: para que la palomita se vea, el botón NO debe
+       tener "On Submit Go To". Con una redirección configurada, CF cambia de
+       página al instante y el verde alcanza a parpadear medio segundo.
+     ====================================================================== */
+  var ENVIO = { enCurso: false, boton: null, textoOriginal: '', reloj: null };
+
+  function textoDelBoton(bt) {
+    /* Ojo con el orden: el <i> del spinner de CF también lleva la clase
+       .elButtonText y aparece ANTES del <span> de la etiqueta, así que un
+       querySelector con lista separada por comas devolvía el spinner —oculto—
+       y el texto del botón nunca cambiaba. Primero el selector exacto. */
+    return bt.querySelector('.elButtonMainText') ||
+           bt.querySelector('.elButtonText:not(.elButtonSpinner)') ||
+           bt;
+  }
+
+  function marcarEnviando(bt) {
+    ENVIO.enCurso = true;
+    ENVIO.boton = bt;
+    var t = textoDelBoton(bt);
+    ENVIO.textoOriginal = t.textContent;
+    t.textContent = 'Enviando…';
+    bt.classList.add('vsb-cf-enviando');
+    bt.setAttribute('aria-busy', 'true');
+
+    /* Red de seguridad: si no llega ninguna respuesta, se devuelve el botón a
+       su estado normal para que se pueda reintentar. Nunca se da por bueno un
+       envío que no confirmó nadie. */
+    ENVIO.reloj = setTimeout(function () {
+      if (ENVIO.enCurso) restaurarBoton('[Vista] El envío no respondió en 20s: el botón vuelve a su estado normal.');
+    }, 20000);
+  }
+
+  function restaurarBoton(aviso) {
+    if (!ENVIO.boton) return;
+    clearTimeout(ENVIO.reloj);
+    var bt = ENVIO.boton;
+    bt.classList.remove('vsb-cf-enviando');
+    bt.removeAttribute('aria-busy');
+    if (ENVIO.textoOriginal) textoDelBoton(bt).textContent = ENVIO.textoOriginal;
+    ENVIO.enCurso = false;
+    ENVIO.boton = null;
+    if (aviso) console.warn(aviso);
+  }
+
+  function marcarEnviado() {
+    if (!ENVIO.boton) return;
+    clearTimeout(ENVIO.reloj);
+    var bt = ENVIO.boton;
+    bt.classList.remove('vsb-cf-enviando');
+    bt.classList.add('vsb-cf-enviado');
+    bt.removeAttribute('aria-busy');
+    textoDelBoton(bt).textContent = '¡Listo! Recibimos tus datos';
+    /* Que un lector de pantalla lo anuncie, no solo el color. */
+    bt.setAttribute('role', 'status');
+    ENVIO.enCurso = false;
+  }
+
+  /** ¿Están llenos los campos obligatorios que se ven? Si no, no se bloquea el
+      botón: le toca a ClickFunnels marcar sus errores. */
+  function obligatoriosCompletos(form) {
+    var campos = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea');
+    for (var i = 0; i < campos.length; i++) {
+      var c = campos[i];
+      if (c.offsetParent === null) continue;
+      var obligatorio = c.hasAttribute('required') || /\brequired1\b/.test(String(c.className));
+      if (obligatorio && !String(c.value || '').trim()) return false;
+    }
+    return true;
+  }
+
+  /** Un POST que terminó. Solo cuenta si hay un envío en curso. */
+  function respuestaDeEnvio(url, estado) {
+    if (!ENVIO.enCurso) return;
+    /* Peticiones de terceros (píxel de Facebook, analítica) no son el envío. */
+    var propia = !/^https?:\/\//i.test(url) ||
+                 url.indexOf(location.origin) === 0 ||
+                 /clickfunnels|myclickfunnels/i.test(url);
+    if (!propia) return;
+    if (estado >= 200 && estado < 400) marcarEnviado();
+    else restaurarBoton('[Vista] El envío respondió ' + estado + '. El botón vuelve a su estado normal.');
+  }
+
+  function vigilarRed() {
+    var XHR = window.XMLHttpRequest;
+    if (XHR && XHR.prototype && !XHR.prototype.__vsbVigilado) {
+      var abrir = XHR.prototype.open, enviar = XHR.prototype.send;
+      XHR.prototype.open = function (metodo, url) {
+        this.__vsbMetodo = String(metodo || '').toUpperCase();
+        this.__vsbUrl = String(url || '');
+        return abrir.apply(this, arguments);
+      };
+      XHR.prototype.send = function () {
+        if (this.__vsbMetodo === 'POST') {
+          var xhr = this;
+          /* addEventListener, no onload: así no se pisa el manejador de CF. */
+          xhr.addEventListener('loadend', function () {
+            respuestaDeEnvio(xhr.__vsbUrl, xhr.status);
+          });
+        }
+        return enviar.apply(this, arguments);
+      };
+      XHR.prototype.__vsbVigilado = true;
+    }
+
+    if (window.fetch && !window.fetch.__vsbVigilado) {
+      var original = window.fetch;
+      var envuelto = function (recurso, opciones) {
+        var metodo = String((opciones && opciones.method) ||
+                            (recurso && recurso.method) || 'GET').toUpperCase();
+        var url = typeof recurso === 'string' ? recurso : ((recurso && recurso.url) || '');
+        var promesa = original.apply(this, arguments);
+        if (metodo === 'POST' && promesa && promesa.then) {
+          promesa.then(
+            function (r) { respuestaDeEnvio(url, r && r.status); },
+            function () { respuestaDeEnvio(url, 0); }
+          );
+        }
+        return promesa;   /* se devuelve tal cual: nada se traga ni se altera */
+      };
+      envuelto.__vsbVigilado = true;
+      window.fetch = envuelto;
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    var bt = e.target.closest && e.target.closest('.elButton, button[type="submit"]');
+    if (!bt || ENVIO.enCurso || bt.classList.contains('vsb-cf-enviado')) return;
+    var form = bt.closest('#vista-form, .vsb-cf-form, .vsb-cf-card') ||
+               document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
+    if (!form || !form.contains(bt)) return;
+    if (!obligatoriosCompletos(form)) return;
+    marcarEnviando(bt);
+  }, true);
+
+  /* ======================================================================
      9 · Arranque
      ====================================================================== */
   function arrancar() {
@@ -660,6 +807,7 @@
     ejemplosEnFormularioCF();
     etiquetasYObligatoriosCF();
   }
+  vigilarRed();   /* antes que nada: CF puede enviar en cuanto haya interacción */
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', arrancar);
