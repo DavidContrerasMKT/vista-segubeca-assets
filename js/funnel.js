@@ -229,13 +229,20 @@
     name = (name || '').trim().replace(/[<>]/g, '').slice(0, 40);
     if (!name) return;   // sin nombre, se queda el texto de respaldo del HTML
 
-    // Capitaliza sin destruir acentos.
-    name = name.charAt(0).toLocaleUpperCase('es-MX') + name.slice(1);
+    /* Capitaliza CADA palabra, sin destruir acentos: con solo la primera letra,
+       un «maría fernanda» en la URL salía como «María fernanda». */
+    var partes = name.split(/\s+/).filter(Boolean).map(function (palabra) {
+      return palabra.charAt(0).toLocaleUpperCase('es-MX') + palabra.slice(1);
+    });
+    var completo = partes.join(' ');
+    /* Para saludar se usa solo el primer nombre: «María, revisa…» se lee como
+       hablaría una persona, y «María Fernanda, revisa…» ya suena a carta. */
+    var primero = partes[0];
 
     slots.forEach(function (slot) {
       slot.textContent = slot.getAttribute('data-vsb-name-prefix') === 'coma'
-        ? ', ' + name
-        : name;
+        ? ', ' + primero
+        : primero;
     });
 
     /* Cuando hay nombre se cambia la apertura de la frase: «María, revisa…» en
@@ -249,8 +256,9 @@
     }
 
     // Rellena de una vez el WhatsApp/nombre del 2º formulario si existe.
+    /* En un CAMPO sí va el nombre completo: es un dato, no un saludo. */
     var pre = document.querySelector('[data-vsb-prefill="nombre"]');
-    if (pre && !pre.value) pre.value = name;
+    if (pre && !pre.value) pre.value = completo;
   }
 
   /* ======================================================================
