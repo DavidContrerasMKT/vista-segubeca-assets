@@ -713,6 +713,54 @@
     mostrarAviso();
   }
 
+  /* ---- El envío RECARGA la página ------------------------------------------
+     Medido en vivo: el botón de CF apunta a `?page_action=mark_complete` y el
+     <form> hace POST con action a la propia página. O sea que al enviar el
+     navegador CARGA LA PÁGINA DE NUEVO — eso es lo que se veía como "me manda
+     al inicio de la página", y por eso una banda encendida antes de irse no
+     sobrevive: el documento donde vivía ya no existe.
+
+     Así que la confirmación se decide al CARGAR:
+
+       1. Si la URL trae `page_action=mark_complete`, el envío ocurrió. Es la
+          señal buena: no depende de nada que hayamos guardado nosotros.
+       2. Si no, sirve una marca en sessionStorage puesta al hacer clic. Cubre
+          el caso de un POST que vuelva sin ese parámetro.
+
+     La marca se BORRA SOLA a los 6 segundos si la página no se fue a ningún
+     lado: si ClickFunnels frenó el envío por su propia validación, no queda una
+     marca suelta que encienda la banda en la siguiente recarga.
+     ------------------------------------------------------------------------ */
+  var MARCA_ENVIO = 'vsbProyeccionEnviada';
+
+  function apuntarEnvio() {
+    try { sessionStorage.setItem(MARCA_ENVIO, String(Date.now())); } catch (err) {}
+    setTimeout(function () {
+      try { sessionStorage.removeItem(MARCA_ENVIO); } catch (err) {}
+    }, 6000);
+  }
+
+  function avisoTrasRecarga() {
+    var porURL = /[?&]page_action=mark_complete/.test(location.search);
+    var porMarca = false;
+    try {
+      var t = Number(sessionStorage.getItem(MARCA_ENVIO) || 0);
+      porMarca = t > 0 && (Date.now() - t) < 120000;   /* 2 min de margen */
+      if (t) sessionStorage.removeItem(MARCA_ENVIO);
+    } catch (err) {}
+
+    if (!porURL && !porMarca) return;
+    mostrarAviso();
+
+    /* Se limpia el parámetro para que un F5 no vuelva a felicitar a nadie. */
+    if (porURL && window.history && history.replaceState) {
+      var limpia = location.pathname +
+        location.search.replace(/([?&])page_action=mark_complete&?/, '$1').replace(/[?&]$/, '') +
+        location.hash;
+      try { history.replaceState(null, '', limpia); } catch (err) {}
+    }
+  }
+
   /** Muestra la banda verde de confirmación. */
   function mostrarAviso() {
     var aviso = document.getElementById('vsb-aviso-proyeccion') ||
@@ -728,9 +776,11 @@
       aviso.classList.add('is-open');
     }
 
-    /* ClickFunnels ya sube la vista al inicio al enviar, pero si algún día deja
-       de hacerlo la confirmación tiene que verse igual. */
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+    /* Tras la recarga la página ya está arriba. Esto solo hace falta si CF
+       algún día envía sin recargar. */
+    if (window.scrollY > 4) {
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+    }
   }
 
   /** ¿Están llenos los campos obligatorios que se ven? Si no, no se bloquea el
@@ -807,6 +857,7 @@
                document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
     if (!form || !form.contains(bt)) return;
     if (!obligatoriosCompletos(form)) return;
+    apuntarEnvio();
     marcarEnviando(bt);
   }, true);
 
@@ -818,6 +869,7 @@
     marcarEstructuraCF();
     ejemplosEnFormularioCF();
     etiquetasYObligatoriosCF();
+    avisoTrasRecarga();
   }
   vigilarRed();   /* antes que nada: CF puede enviar en cuanto haya interacción */
 
