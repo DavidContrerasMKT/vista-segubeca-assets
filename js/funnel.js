@@ -710,7 +710,7 @@
       ENVIO.boton.removeAttribute('aria-busy');
     }
     ENVIO.enCurso = false;
-    mostrarAviso();
+    mostrarAviso('enviado');
   }
 
   /* ---- El envío RECARGA la página ------------------------------------------
@@ -749,8 +749,12 @@
       if (t) sessionStorage.removeItem(MARCA_ENVIO);
     } catch (err) {}
 
-    if (!porURL && !porMarca) return;
-    mostrarAviso();
+    if (!porURL && !porMarca) {
+      /* Visita normal: el saludo de bienvenida, tres segundos y se va. */
+      mostrarAviso('llegada');
+      return;
+    }
+    mostrarAviso('enviado');
 
     /* Se limpia el parámetro para que un F5 no vuelva a felicitar a nadie. */
     if (porURL && window.history && history.replaceState) {
@@ -761,12 +765,19 @@
     }
   }
 
-  /** Muestra la banda verde de confirmación. */
-  function mostrarAviso() {
+  /** Muestra la banda verde.
+      variante: 'llegada' (al entrar a la página, se va sola) o
+                'enviado'  (tras enviar la Proyección, se queda).
+      El texto de cada una vive en el HTML, no aquí: así se cambia la copia sin
+      tocar el JavaScript. */
+  function mostrarAviso(variante) {
+    variante = variante || 'enviado';
     var aviso = document.getElementById('vsb-aviso-proyeccion') ||
                 document.querySelector('.vsb-aviso');
     if (!aviso || aviso.classList.contains('is-open')) return;
 
+    aviso.classList.remove('is-llegada', 'is-enviado');
+    aviso.classList.add('is-' + variante);
     aviso.hidden = false;
     /* Un fotograma de espera: si se quita `hidden` y se abre en el mismo, el
        navegador no tiene desde dónde animar y la banda aparece de golpe. */
@@ -778,8 +789,21 @@
 
     /* Tras la recarga la página ya está arriba. Esto solo hace falta si CF
        algún día envía sin recargar. */
-    if (window.scrollY > 4) {
+    if (variante === 'enviado' && window.scrollY > 4) {
       try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+    }
+
+    /* La de llegada se retira sola: es un saludo, no un aviso permanente. La de
+       la Proyección se queda, porque es el acuse de que sus datos salieron. */
+    if (variante === 'llegada') {
+      setTimeout(function () {
+        aviso.classList.remove('is-open');
+        /* `hidden` se pone al terminar la transición, no antes: si no, la banda
+           desaparece de golpe en vez de recogerse. */
+        setTimeout(function () {
+          if (!aviso.classList.contains('is-open')) aviso.hidden = true;
+        }, 420);
+      }, 3000);
     }
   }
 

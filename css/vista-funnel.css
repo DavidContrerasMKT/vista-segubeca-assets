@@ -1010,6 +1010,15 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
   max-height: 160px; padding-top: 15px; padding-bottom: 15px; opacity: 1;
 }
 .vsb-aviso-icono { display: inline-flex; flex: none; }
+
+/* Dos mensajes en la misma banda: el de llegada y el del envío del formulario.
+   funnel.js enciende uno o el otro. Sin clase no se ve ninguno, así que la
+   banda nunca aparece vacía. */
+.vsb-aviso-texto { display: none; }
+.vsb-aviso.is-llegada [data-vsb-aviso="llegada"],
+.vsb-aviso.is-enviado [data-vsb-aviso="enviado"] { display: inline; }
+/* El de la Proyección ya lleva su propio emoji al final: la palomita sobra. */
+.vsb-aviso.is-enviado .vsb-aviso-icono { display: none; }
 @media (prefers-reduced-motion: reduce) { .vsb-aviso { transition: none; } }
 
 /* Estado de envío del botón */
