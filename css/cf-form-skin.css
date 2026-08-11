@@ -495,6 +495,9 @@
   padding: 20px 34px !important;
   border: 0 !important;
   border-radius: 999px !important;
+  /* El botón de CF es un <a>: sin esto queda subrayado si algún día CF deja de
+     poner su propio reset de enlaces. */
+  text-decoration: none !important;
   /* 59.5px es el alto exacto del botón del diseño: allí la flecha es un <span>
      en línea y su interlineado engorda la caja 0.86px más que el flex de CF. */
   min-height: 59.5px !important;
