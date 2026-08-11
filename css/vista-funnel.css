@@ -828,7 +828,11 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 .vsb-video:hover .vsb-video-play { transform: scale(1.07); }
 .vsb-video-play svg { margin-left: 4px; }
 .vsb-video-tag {
-  position: absolute; bottom: 18px; left: 18px; z-index: 2;
+  /* SIN z-index a propósito. El iframe se inserta como último hijo, así que
+     con el orden del documento ya pinta encima de la pastilla y esta desaparece
+     al arrancar el video. Con z-index:2 se quedaba flotando sobre el
+     reproductor, justo sobre los subtítulos quemados de la esquina. */
+  position: absolute; bottom: 18px; left: 18px;
   background: rgba(15,18,40,.55); color: var(--white);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   box-shadow: none;
@@ -992,6 +996,11 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
      que es refuerzo repetido y aquí cuesta 58px de los que hacen falta.
      Para recuperarla, borra esta regla — el video vuelve a cortarse en el SE. */
   .vsb-confirm-badge { display: none; }
+
+  /* La pastilla del video, a escala del reproductor chico: en móvil mide
+     358×201 y con el tamaño de escritorio tapaba toda la esquina —y con ella
+     los subtítulos quemados del video. */
+  .vsb-video-tag { bottom: 10px; left: 10px; padding: 5px 10px; font-size: 10.4px; gap: 5px; }
 
   .vsb-btn { padding: 17px 20px; width: 100%; font-size: 13.12px; letter-spacing: 0.04em; gap: 9px; }
   .vsb-btn-note { text-align: center; }
