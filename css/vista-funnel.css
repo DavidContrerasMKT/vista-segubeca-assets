@@ -988,18 +988,27 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
    página, así que ahí es donde la persona está mirando. Blanco sobre este
    verde da 5.3:1, o sea AA.
    -------------------------------------------------------------------------- */
+/* Va en el flujo normal, arriba de la franja del logo — NO fija. Una banda
+   fija se monta encima del logo y hay que reservarle el hueco con un padding en
+   <html>; en el flujo empuja el contenido ella sola y no depende de nada del
+   entorno (ni de un overflow ajeno, como le pasaría a position: sticky dentro
+   de los contenedores de ClickFunnels). Al enviar, CF lleva la vista al inicio,
+   así que aquí arriba es donde queda mirando la persona. */
 .vsb-aviso {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
   display: flex; align-items: center; justify-content: center; gap: 10px;
   padding: 15px clamp(16px, 3vw, 28px);
   background: #1E7A5A; color: var(--white);
   font-size: var(--t-small); font-weight: 700; letter-spacing: 0.02em;
   text-align: center; text-wrap: balance;
-  box-shadow: 0 10px 30px rgba(27,33,80,.20);
-  transform: translateY(-100%);
-  transition: transform .34s cubic-bezier(.22,.61,.36,1);
+  /* Cerrada mide cero y no se ve; al abrirse empuja la página hacia abajo. */
+  max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden;
+  transition: max-height .34s cubic-bezier(.22,.61,.36,1),
+              padding .34s cubic-bezier(.22,.61,.36,1),
+              opacity .24s ease;
 }
-.vsb-aviso.is-open { transform: none; }
+.vsb-aviso.is-open {
+  max-height: 160px; padding-top: 15px; padding-bottom: 15px; opacity: 1;
+}
 .vsb-aviso-icono { display: inline-flex; flex: none; }
 @media (prefers-reduced-motion: reduce) { .vsb-aviso { transition: none; } }
 
