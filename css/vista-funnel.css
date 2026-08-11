@@ -44,6 +44,10 @@
   --grey-200: #DDDDDD;
   --black:    #000000;
 
+  /* Gil pidió el fondo en un neutro. La crema NO desaparece: sigue siendo el
+     color del papel —tarjetas, formularios, popup—, y ahora contrasta con la
+     página en vez de fundirse con ella. Negro sobre este neutro: 19.1:1. */
+  --neutral-050: #F3F4F8;
   --cream-050: #F6F1E7;
   --cream-200: #EAE1D0;
   --navy-900:  #1B2150;
@@ -55,7 +59,7 @@
   --font-editorial: 'Cormorant Garamond', Georgia, serif;
 
   /* Escala fluida — mismos roles que DESIGN.md §3 */
-  --t-display:   clamp(35.2px, 18.4px + 2.95cqw, 59.2px);
+  --t-display:   clamp(35.2px, 18.4px + 2.95cqw, 50.32px);
   --t-statement: clamp(28px, 16.8px + 2.00cqw, 46.08px);
   --t-headline:  clamp(24px, 17.6px + 1.15cqw, 34.4px);
   --t-lead:      clamp(16.96px, 15.68px + 0.25cqw, 20px);
@@ -208,7 +212,7 @@ body:has(> .vsb) { margin: 0; }
      no las alcanzan y usan los valores de escritorio; el apilado en móvil lo
      resuelve la media query de #vista-hero-section, que sí mira la ventana. */
   container-type: normal;
-  --t-display:   clamp(35.2px, 18.4px + 2.95vw, 59.2px);
+  --t-display:   clamp(35.2px, 18.4px + 2.95vw, 50.32px);
   --t-statement: clamp(28px, 16.8px + 2.00vw, 46.08px);
   --t-headline:  clamp(24px, 17.6px + 1.15vw, 34.4px);
   --t-lead:      clamp(16.96px, 15.68px + 0.25vw, 20px);
@@ -249,7 +253,7 @@ body:has(> .vsb) { margin: 0; }
   font-size: 17px;
   line-height: var(--lh-body);
   color: var(--black);
-  background: var(--cream-200);
+  background: var(--neutral-050);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -294,8 +298,11 @@ body:has(> .vsb) { margin: 0; }
 /* --surface es el color de fondo de la superficie, expuesto como variable.
    Lo necesita todo componente que al invertirse tenga que pintar texto DEL
    color del fondo — el botón de contorno en :hover, por ejemplo. */
-.vsb-s-cream  { background: var(--cream-050); --surface: var(--cream-050); }  /* negro 18.7:1 */
-.vsb-s-sand   { background: var(--cream-200); --surface: var(--cream-200); }  /* negro 16.2:1 */
+/* Las dos bandas claras comparten el neutro: la variación cálida ahora la
+   aportan las tarjetas encima, no las franjas. Los nombres se conservan para no
+   tocar el marcado de las dos páginas ni los bloques ya pegados en CF. */
+.vsb-s-cream  { background: var(--neutral-050); --surface: var(--neutral-050); }  /* negro 19.1:1 */
+.vsb-s-sand   { background: var(--neutral-050); --surface: var(--neutral-050); }  /* negro 19.1:1 */
 .vsb-s-white  { background: var(--white);     --surface: var(--white);     }  /* negro 21.0:1 */
 .vsb-s-navy   { background: var(--navy-900);  --surface: var(--navy-900);  }  /* blanco 15.2:1 · peri-500 5.0:1 */
 .vsb-s-indigo { background: var(--peri-900);  --surface: var(--peri-900);  }  /* blanco  9.9:1 */
@@ -540,8 +547,19 @@ body:has(> .vsb) { margin: 0; }
    con space-between y un solo hijo el logo se quedaría pegado a la izquierda. */
 .vsb-topbar {
   display: flex; align-items: center; justify-content: center; gap: 20px;
-  padding: clamp(18px, 2.4cqw, 30px) var(--gut);
+  padding: clamp(14px, 1.6cqw, 20px) var(--gut);
 }
+/* El logo es un enlace: que no herede el subrayado ni el color de los enlaces
+   del cuerpo, y que se note al pasar el puntero. */
+.vsb-topbar-link {
+  display: inline-flex; text-decoration: none; border: 0;
+  transition: opacity .16s ease;
+}
+.vsb-topbar-link:hover { opacity: .72; }
+.vsb-topbar-link:focus-visible {
+  outline: 2px solid var(--peri-500); outline-offset: 6px; border-radius: 4px;
+}
+
 .vsb-topbar img { height: clamp(36px, 3.6cqw, 47px); width: auto; }
 
 /* ==========================================================================
@@ -679,9 +697,12 @@ body:has(> .vsb) { margin: 0; }
 /* ==========================================================================
    12 · Formularios — etiqueta FUERA del campo, placeholder más claro
    ========================================================================== */
-.vsb-field + .vsb-field { margin-top: 18px; }
+/* El aire va ARRIBA de la etiqueta, no entre la etiqueta y su campo: así cada
+   nombre se lee como parte del renglón que le toca y no del de encima. Antes
+   eran 18px arriba y 8px abajo, y las etiquetas quedaban a medio camino. */
+.vsb-field + .vsb-field { margin-top: 26px; }
 .vsb-label {
-  display: block; margin-bottom: 8px;
+  display: block; margin-bottom: 6px;
   font-size: var(--t-small); font-weight: 700; letter-spacing: 0.01em;
 }
 .vsb-label .vsb-req { color: var(--ink-accent); margin-left: 2px; }
@@ -799,10 +820,22 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
    el bloque necesita apretarse en móvil (§20) para que el video entre sin
    scroll. Los valores de escritorio son los mismos de antes.
    ========================================================================== */
-.vsb-confirm-title { margin-top: 20px; }
-.vsb-confirm-lead  { margin: 20px auto 0; max-width: 56ch; }
-.vsb-video-block   { margin-top: clamp(38px, 5cqw, 60px); }
-.vsb-video-title   { margin: 0 auto clamp(24px, 3cqw, 34px); max-width: 30ch; }
+/* Todo el bloque de confirmación va apretado a propósito, también en
+   escritorio: el cliente pidió que el video de Gil se vea lo más posible sin
+   hacer scroll, y cada píxel de aire aquí arriba es un píxel menos de video.
+   El reproductor mide 698px de alto en escritorio (1240 de ancho en 16:9), así
+   que la única palanca es lo que va ENCIMA. */
+.vsb-section.vsb-confirm-section { padding-top: clamp(18px, 2.2cqw, 34px); }
+.vsb-confirm-title { margin-top: 14px; }
+.vsb-confirm-lead  { margin: 14px auto 0; max-width: 56ch; }
+.vsb-video-block   { margin-top: clamp(18px, 2.2cqw, 30px); }
+/* Más chico que --t-statement a propósito. Con el titular bajado un 15% (a
+   50.3px), un h2 de 46px justo debajo competía con él en vez de acompañarlo; y
+   de paso son ~30px menos de altura antes del video. */
+.vsb-video-title   {
+  margin: 0 auto clamp(16px, 1.8cqw, 22px); max-width: 30ch;
+  font-size: clamp(24px, 14px + 1.6cqw, 38px);
+}
 .vsb-video-note    { margin: clamp(22px, 2.6cqw, 30px) auto 0; max-width: 62ch; }
 
 /* ==========================================================================

@@ -79,7 +79,7 @@
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
-  background: #EAE1D0 !important;
+  background: #F3F4F8 !important;
   /* El COLOR sangra a todo lo ancho, pero el CONTENIDO se limita a 1240px y se
      centra — igual que `.vsb-shell` en el diseño original. Sin esto la Row de CF
      mide 1870px, la tarjeta sale a ~900px en vez de ~628px y el titular parte
@@ -138,7 +138,7 @@
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
-  background: #EAE1D0 !important;
+  background: #F3F4F8 !important;
   padding: 8px 16px 56px !important;
   overflow-x: clip !important;   /* red de seguridad contra scroll horizontal */
   /* Sin esquinas redondeadas: CF le da a sus Row un radio de 55px y la banda
@@ -305,7 +305,9 @@
      ClickFunnels: ahí cada campo se ajusta por separado y basta un 15px en uno
      para que la columna quede despareja. */
   margin-top: 0 !important;
-  margin-bottom: 18px !important;
+  /* 26px, no 18: el aire va arriba de la etiqueta para que cada nombre se lea
+     con su propio renglón. Lo pidió el cliente y aplica a los dos formularios. */
+  margin-bottom: 26px !important;
   background: transparent !important;
   border: 0 !important;
   padding: 0 !important;
@@ -331,7 +333,7 @@
   min-height: 0 !important;
   max-height: none !important;
   padding: 0 !important;
-  margin: 0 0 8px 0 !important;
+  margin: 0 0 6px 0 !important;
   line-height: 1.3 !important;
   pointer-events: auto !important;
   background: transparent !important;
@@ -368,7 +370,7 @@
   /* CF suele escribirlas en MAYÚSCULAS desde su propio CSS; el diseño las
      quiere en caja normal, y así se lee el acento de "Correo" y "WhatsApp". */
   text-transform: none !important;
-  margin: 0 0 8px 0 !important;
+  margin: 0 0 6px 0 !important;
   font-size: 15.04px !important;
   font-weight: 700 !important;
   line-height: 1.3 !important;

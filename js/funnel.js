@@ -416,8 +416,11 @@
      eso, el asterisco salía también en el único campo opcional de la página 2.
      ====================================================================== */
   var ETIQUETAS_CF = [
-    { name: /ciudad/i,       texto: 'Ciudad' },
     { name: /ahorro|rango/i, texto: 'Ahorro mensual que tienes en mente' },
+    /* Ciudad se quitó del formulario a pedido del cliente. La regla se queda
+       por si algún día vuelve: cuesta una línea y ahorra el viaje de volver
+       a averiguar por qué el desplegable sale sin etiqueta. */
+    { name: /ciudad/i,       texto: 'Ciudad' },
   ];
 
   function etiquetaDeCF(texto, paraId) {
