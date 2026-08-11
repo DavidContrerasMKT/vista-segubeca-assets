@@ -238,6 +238,16 @@
         : name;
     });
 
+    /* Cuando hay nombre se cambia la apertura de la frase: «María, revisa…» en
+       lugar de «Revisa…». Son dos trozos alternativos en el HTML, así que no hay
+       que andar bajando mayúsculas a mano ni adivinar dónde empieza el verbo. */
+    var conSaludo = document.querySelectorAll('[data-vsb-saludo]');
+    var sinSaludo = document.querySelectorAll('[data-vsb-sin-saludo]');
+    if (conSaludo.length && sinSaludo.length) {
+      Array.prototype.forEach.call(conSaludo, function (e) { e.hidden = false; });
+      Array.prototype.forEach.call(sinSaludo, function (e) { e.hidden = true; });
+    }
+
     // Rellena de una vez el WhatsApp/nombre del 2º formulario si existe.
     var pre = document.querySelector('[data-vsb-prefill="nombre"]');
     if (pre && !pre.value) pre.value = name;
