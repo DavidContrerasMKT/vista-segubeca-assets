@@ -417,6 +417,11 @@
   box-shadow: 0 0 0 4px rgba(123,138,255,.24) !important;
 }
 
+/* ClickFunnels dibuja SU flecha aparte: un <div class="elSelectArrow"> con un
+   chevron de Font Awesome dentro. Como abajo se le pone la del diseño al
+   propio <select>, se veían dos flechas encimadas. */
+:is(#vista-form,.vsb-cf-form) .elSelectArrow { display: none !important; }
+
 /* Flecha propia para los desplegables */
 :is(#vista-form,.vsb-cf-form) select {
   padding-right: 46px !important;
