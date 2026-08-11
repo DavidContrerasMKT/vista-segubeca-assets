@@ -141,6 +141,10 @@
   background: #EAE1D0 !important;
   padding: 8px 16px 56px !important;
   overflow-x: clip !important;   /* red de seguridad contra scroll horizontal */
+  /* Sin esquinas redondeadas: CF le da a sus Row un radio de 55px y la banda
+     salía con las cuatro puntas curvas en lugar de ir de borde a borde. */
+  border: 0 !important;
+  border-radius: 0 !important;
 }
 /* Las columnas de esa Row tampoco deben limitar el ancho. */
 :is(#vista-form-section,.vsb-cf-formrow) > [class*="col-"]:not(:is(#vista-card,.vsb-cf-card)),
