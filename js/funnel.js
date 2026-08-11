@@ -454,9 +454,36 @@
     return cont;
   }
 
+  /* La primera opción de un desplegable es el rótulo, no una respuesta.
+     ClickFunnels no deja dejarla vacía: si el campo "Value" se deja en blanco,
+     CF le copia el texto, y entonces un formulario enviado sin elegir nada
+     llega con "Elige un rango" como si fuera la respuesta de la persona —y la
+     marca de obligatorio no sirve de nada, porque para CF ya hay valor.
+
+     Aquí se neutraliza donde sí se puede: valor vacío y `disabled`. Con eso no
+     se envía, no se puede volver a elegir, y el desplegable sigue mostrando el
+     rótulo mientras nadie ha contestado.
+
+     Se reconoce por cómo empieza el texto. Si algún día se escribe un rótulo que
+     no arranque con Elige/Selecciona/Escoge, hay que añadirlo a esta lista. */
+  var ROTULO_DESPLEGABLE = /^\s*(elige|selecciona|escoge|please\s+select|select\s)/i;
+
+  function neutralizarRotulos(form) {
+    Array.prototype.forEach.call(form.querySelectorAll('select'), function (sel) {
+      var primera = sel.options && sel.options[0];
+      if (!primera || !ROTULO_DESPLEGABLE.test(primera.text || '')) return;
+      if (primera.value !== '') primera.value = '';
+      if (!primera.disabled) primera.disabled = true;
+      /* Si nadie ha elegido, que el rótulo siga a la vista. */
+      if (sel.selectedIndex < 0) sel.selectedIndex = 0;
+    });
+  }
+
   function etiquetasYObligatoriosCF() {
     var form = document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
     if (!form) return;
+
+    neutralizarRotulos(form);
 
     var campos = form.querySelectorAll('select, input:not([type="hidden"]):not([type="submit"]):not([type="button"])');
 
