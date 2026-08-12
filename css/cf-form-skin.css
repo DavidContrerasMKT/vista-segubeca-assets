@@ -744,3 +744,24 @@ a[href*="clickfunnels.com"][target="_blank"].badge,
   cursor: default !important;
   opacity: .55 !important;
 }
+
+/* --------------------------------------------------------------------------
+   9 · Aviso de campo obligatorio que falta
+
+   Lo pinta funnel.js cuando frena un envío incompleto. Hace falta porque en
+   ClickFunnels un SelectBox marcado como Required NO deja enviar el formulario
+   —comprobado— así que el campo va como opcional en CF y la exigencia la
+   aplica la página. Sin este aviso, la persona no sabría qué le falta.
+   -------------------------------------------------------------------------- */
+:is(#vista-form,.vsb-cf-form) .vsb-cf-error {
+  margin: 7px 0 0 !important;
+  font-size: 15.04px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  color: #B3261E !important;
+  text-align: start !important;
+}
+:is(#vista-form,.vsb-cf-form) .vsb-cf-falta :is(input,select,textarea) {
+  border-color: #B3261E !important;
+  box-shadow: 0 0 0 4px rgba(179,38,30,.14) !important;
+}

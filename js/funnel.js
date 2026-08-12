@@ -466,7 +466,76 @@
 
      Se reconoce por cómo empieza el texto. Si algún día se escribe un rótulo que
      no arranque con Elige/Selecciona/Escoge, hay que añadirlo a esta lista. */
+  /* La clase con la que ClickFunnels marca lo obligatorio. */
+  var RE_REQUERIDO = new RegExp("\\brequired1\\b");
   var ROTULO_DESPLEGABLE = /^\s*(elige|selecciona|escoge|please\s+select|select\s)/i;
+
+  /* ----------------------------------------------------------------------
+     Campos que el cliente quiere OBLIGATORIOS y que en ClickFunnels hay que
+     dejar marcados como NO obligatorios.
+
+     Por qué: un SelectBox marcado como Required en CF impide el envío del
+     formulario. Comprobado en vivo con las cuatro combinaciones —con y sin
+     este script, con y sin el Required—: con Required puesto NO sale ni una
+     petición, sin mensaje de error ni nada en la consola, incluso con una
+     opción válida elegida. Es cosa de ClickFunnels, no de esta página.
+
+     Así que en CF el campo va como opcional y la exigencia se aplica aquí: si
+     está vacío no se deja enviar, se marca y se explica. La etiqueta conserva
+     su asterisco.
+     ---------------------------------------------------------------------- */
+  var OBLIGATORIOS_POR_DISENO = [/ahorro/i, /rango/i];
+
+  function loPideElDiseno(campo) {
+    var n = campo.getAttribute('name') || '';
+    for (var i = 0; i < OBLIGATORIOS_POR_DISENO.length; i++) {
+      if (OBLIGATORIOS_POR_DISENO[i].test(n)) return true;
+    }
+    return false;
+  }
+
+  /** El primer campo obligatorio que está vacío, o null. */
+  function primerVacio(form) {
+    var campos = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea');
+    for (var i = 0; i < campos.length; i++) {
+      var c = campos[i];
+      if (c.offsetParent === null) continue;
+      var pedido = c.hasAttribute('required') ||
+                   RE_REQUERIDO.test(String(c.className)) ||
+                   loPideElDiseno(c);
+      if (pedido && !String(c.value || '').trim()) return c;
+    }
+    return null;
+  }
+
+  function marcarFalta(campo) {
+    var wrap = campo.closest('.elFormItemWrapper, .elInputWrapper') || campo.parentElement;
+    if (!wrap) return;
+    wrap.classList.add('vsb-cf-falta');
+    var aviso = wrap.querySelector('.vsb-cf-error');
+    if (!aviso) {
+      aviso = document.createElement('p');
+      aviso.className = 'vsb-cf-error';
+      aviso.setAttribute('role', 'alert');
+      wrap.appendChild(aviso);
+    }
+    aviso.textContent = campo.tagName === 'SELECT' ? 'Elige una opción.' : 'Este campo es obligatorio.';
+    campo.setAttribute('aria-invalid', 'true');
+  }
+
+  function limpiarFalta(campo) {
+    var wrap = campo.closest('.elFormItemWrapper, .elInputWrapper') || campo.parentElement;
+    if (!wrap) return;
+    wrap.classList.remove('vsb-cf-falta');
+    campo.removeAttribute('aria-invalid');
+  }
+
+  /* En cuanto elige algo, se retira el aviso. */
+  document.addEventListener('change', function (e) {
+    var c = e.target;
+    if (c && c.matches && c.matches('select, input') && String(c.value || '').trim()) limpiarFalta(c);
+  }, true);
+
 
   function neutralizarRotulos(form) {
     Array.prototype.forEach.call(form.querySelectorAll('select'), function (sel) {
@@ -514,7 +583,8 @@
 
       /* ---- Obligatorio u opcional ---- */
       var clases = String(campo.className);
-      var obligatorio = campo.hasAttribute('required') || /\brequired1\b/.test(clases);
+      var obligatorio = campo.hasAttribute('required') || RE_REQUERIDO.test(clases) ||
+                        loPideElDiseno(campo);
       /* A los <input> CF les pone `required0` cuando no son obligatorios, pero a
          los <select> no les pone nada: en un desplegable, que falte `required1`
          ya significa opcional. */
@@ -943,7 +1013,19 @@
     var form = bt.closest('#vista-form, .vsb-cf-form, .vsb-cf-card') ||
                document.querySelector('#vista-form, .vsb-cf-form, .vsb-cf-card');
     if (!form || !form.contains(bt)) return;
-    if (!obligatoriosCompletos(form)) return;
+    /* Falta un obligatorio: se corta el clic AQUÍ, en fase de captura, para que
+       el manejador de ClickFunnels no llegue a verlo. El aviso lo damos
+       nosotros: CF no muestra ninguno para los desplegables. */
+    var falta = primerVacio(form);
+    if (falta) {
+      e.preventDefault();
+      e.stopPropagation();
+      marcarFalta(falta);
+      try { falta.focus(); } catch (err) {}
+      falta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
     apuntarEnvio();
     marcarEnviando(bt);
   }, true);
