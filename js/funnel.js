@@ -826,6 +826,35 @@
     }
     ENVIO.enCurso = false;
     mostrarAviso('enviado');
+    irAlSiguientePaso();
+  }
+
+  /* ----------------------------------------------------------------------
+     Llevar al siguiente paso si ClickFunnels no lo hace
+
+     Medido en vivo: tras un envío correcto CF se queda en la misma página, aun
+     con el destino configurado. El destino sí está en el DOM —lo escribe CF en
+     data-on-submit-go-to del propio botón— así que si a los 900ms seguimos
+     donde estábamos, se navega desde aquí.
+
+     Se espera primero para no atropellar a CF si decide navegar él: en cuanto
+     cambia de página este temporizador muere con ella, y la condición de abajo
+     evita saltar dos veces.
+     ---------------------------------------------------------------------- */
+  function irAlSiguientePaso() {
+    var bt = ENVIO.boton || document.querySelector('.elButton[data-on-submit-go-to]');
+    var destino = bt && bt.getAttribute('data-on-submit-go-to');
+    if (!destino) return;
+
+    var absoluto;
+    try { absoluto = new URL(destino, location.href).href; } catch (err) { return; }
+    var aqui = location.href.split('#')[0];
+    if (absoluto.split('#')[0] === aqui) return;   /* ya estamos ahí */
+
+    setTimeout(function () {
+      if (location.href.split('#')[0] !== aqui) return;   /* CF ya navegó */
+      location.href = absoluto;
+    }, 900);
   }
 
   /* ---- El envío RECARGA la página ------------------------------------------
