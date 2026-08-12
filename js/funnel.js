@@ -794,26 +794,38 @@
       if (t) sessionStorage.removeItem(MARCA_ENVIO);
     } catch (err) {}
 
-    if (!porURL && !porMarca) {
-      /* Visita normal. Cada página decide con qué banda recibe: la página 2
-         saluda ('llegada', y se retira sola), y la 3 confirma el envío
-         ('enviado', y se queda), porque llegar ahí YA significa que el
-         formulario se envió. Lo dice data-vsb-aviso-inicio en el HTML. */
-      var aviso = document.getElementById('vsb-aviso-proyeccion') ||
-                  document.querySelector('.vsb-aviso');
-      var inicio = aviso && aviso.getAttribute('data-vsb-aviso-inicio');
-      mostrarAviso(inicio || 'llegada');
+    /* LA PÁGINA MANDA. Cada una declara con qué banda recibe en
+       data-vsb-aviso-inicio, y eso gana sobre cualquier señal de envío.
+
+       Hace falta que gane porque `page_action=mark_complete` solo dice «se
+       envió un formulario», no CUÁL: al llegar a la página 2 desde el envío de
+       la página 1, el parámetro viene puesto y la banda salía diciendo «ya
+       estamos preparando tu proyección» cuando lo que se acababa de pedir era
+       la guía. La página 2 recibe con el saludo de la guía; la 3, que solo se
+       abre al enviar la Proyección, con el acuse. */
+    var aviso = document.getElementById('vsb-aviso-proyeccion') ||
+                document.querySelector('.vsb-aviso');
+    var inicio = aviso && aviso.getAttribute('data-vsb-aviso-inicio');
+    if (inicio) {
+      mostrarAviso(inicio);
+      if (porURL) limpiarParametro();
       return;
     }
-    mostrarAviso('enviado');
 
-    /* Se limpia el parámetro para que un F5 no vuelva a felicitar a nadie. */
-    if (porURL && window.history && history.replaceState) {
-      var limpia = location.pathname +
-        location.search.replace(/([?&])page_action=mark_complete&?/, '$1').replace(/[?&]$/, '') +
-        location.hash;
-      try { history.replaceState(null, '', limpia); } catch (err) {}
-    }
+    /* Sin declaración, se cae a la señal de envío: es lo que sirve si algún día
+       el formulario se manda SIN cambiar de página. */
+    mostrarAviso(porURL || porMarca ? 'enviado' : 'llegada');
+
+    if (porURL) limpiarParametro();
+  }
+
+  /* Se limpia el parámetro para que un F5 no vuelva a felicitar a nadie. */
+  function limpiarParametro() {
+    if (!window.history || !history.replaceState) return;
+    var limpia = location.pathname +
+      location.search.replace(/([?&])page_action=mark_complete&?/, '$1').replace(/[?&]$/, '') +
+      location.hash;
+    try { history.replaceState(null, '', limpia); } catch (err) {}
   }
 
   /** Muestra la banda verde.
