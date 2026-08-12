@@ -982,14 +982,33 @@
     return true;
   }
 
+  /** ¿Esta URL es el envío del formulario, y no otra cosa?
+
+      Hace falta ser estricto: ClickFunnels manda POST suyos de analítica al
+      MISMO dominio (/_cf/s, /_cf/a) mientras se envía. Si uno de esos contara
+      como "el formulario llegó", se daría el envío por bueno —y ahora también
+      se avanzaría de paso— con la petición de verdad todavía en el aire, o sea
+      perdiendo el lead. Solo cuenta la URL a la que apunta el <form>. */
+  function esElEnvio(url) {
+    if (!url) return false;
+    if (/\/_cf\//i.test(url)) return false;              /* analítica de CF */
+    var sinAdornos = function (u) { return String(u).split('#')[0].split('?')[0]; };
+    var absoluta;
+    try { absoluta = new URL(url, location.href).href; } catch (err) { return false; }
+
+    var form = document.querySelector('form[action]');
+    var destinos = [location.href];
+    if (form) destinos.push(new URL(form.getAttribute('action'), location.href).href);
+    for (var i = 0; i < destinos.length; i++) {
+      if (sinAdornos(absoluta) === sinAdornos(destinos[i])) return true;
+    }
+    return false;
+  }
+
   /** Un POST que terminó. Solo cuenta si hay un envío en curso. */
   function respuestaDeEnvio(url, estado) {
     if (!ENVIO.enCurso) return;
-    /* Peticiones de terceros (píxel de Facebook, analítica) no son el envío. */
-    var propia = !/^https?:\/\//i.test(url) ||
-                 url.indexOf(location.origin) === 0 ||
-                 /clickfunnels|myclickfunnels/i.test(url);
-    if (!propia) return;
+    if (!esElEnvio(url)) return;
     if (estado >= 200 && estado < 400) marcarEnviado();
     else restaurarBoton('[Vista] El envío respondió ' + estado + '. El botón vuelve a su estado normal.');
   }
