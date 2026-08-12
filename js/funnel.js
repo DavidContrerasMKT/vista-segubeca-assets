@@ -841,20 +841,25 @@
      cambia de página este temporizador muere con ella, y la condición de abajo
      evita saltar dos veces.
      ---------------------------------------------------------------------- */
-  function irAlSiguientePaso() {
+  function irAlSiguientePaso(yaMismo) {
     var bt = ENVIO.boton || document.querySelector('.elButton[data-on-submit-go-to]');
     var destino = bt && bt.getAttribute('data-on-submit-go-to');
-    if (!destino) return;
+    if (!destino) return false;
 
     var absoluto;
-    try { absoluto = new URL(destino, location.href).href; } catch (err) { return; }
-    var aqui = location.href.split('#')[0];
-    if (absoluto.split('#')[0] === aqui) return;   /* ya estamos ahí */
+    try { absoluto = new URL(destino, location.href).href; } catch (err) { return false; }
+    if (absoluto.split('#')[0].split('?')[0] === paginaActual()) return false;   /* ya estamos ahí */
 
+    /* yaMismo: venimos de la recarga que provoca el propio envío, así que CF ya
+       tuvo su oportunidad y no hay nada que esperar. */
+    if (yaMismo) { location.href = absoluto; return true; }
+
+    var aqui = location.href.split('#')[0];
     setTimeout(function () {
       if (location.href.split('#')[0] !== aqui) return;   /* CF ya navegó */
       location.href = absoluto;
     }, 900);
+    return true;
   }
 
   /* ---- El envío RECARGA la página ------------------------------------------
@@ -877,21 +882,40 @@
      ------------------------------------------------------------------------ */
   var MARCA_ENVIO = 'vsbProyeccionEnviada';
 
+  function paginaActual() { return location.href.split('#')[0].split('?')[0]; }
+
+  /* La marca guarda EN QUÉ PÁGINA se hizo el clic, no solo la hora.
+     Sin eso, la marca que deja el envío de la página 1 seguiría en pie al
+     cargar la página 2 —el temporizador que la borra muere con la página— y la
+     página 2 creería que su propio formulario ya se envió: adelantaría a todo
+     el mundo al paso 3 sin haber pedido la Proyección. */
   function apuntarEnvio() {
-    try { sessionStorage.setItem(MARCA_ENVIO, String(Date.now())); } catch (err) {}
+    try {
+      sessionStorage.setItem(MARCA_ENVIO, JSON.stringify({ u: paginaActual(), t: Date.now() }));
+    } catch (err) {}
     setTimeout(function () {
       try { sessionStorage.removeItem(MARCA_ENVIO); } catch (err) {}
     }, 6000);
   }
 
+  /** ¿La página se acaba de recargar por un envío hecho AQUÍ? Se consume. */
+  function envioDeEstaPagina() {
+    var crudo = null;
+    try {
+      crudo = sessionStorage.getItem(MARCA_ENVIO);
+      if (crudo) sessionStorage.removeItem(MARCA_ENVIO);
+    } catch (err) { return false; }
+    if (!crudo) return false;
+    var d = null;
+    try { d = JSON.parse(crudo); } catch (err) { return false; }
+    return !!(d && d.u === paginaActual() && (Date.now() - d.t) < 120000);
+  }
+
   function avisoTrasRecarga() {
+    /* La marca ya la consumió arrancar(): aquí solo queda la señal de la URL,
+       que dice «se envió algo» sin decir qué. */
     var porURL = /[?&]page_action=mark_complete/.test(location.search);
     var porMarca = false;
-    try {
-      var t = Number(sessionStorage.getItem(MARCA_ENVIO) || 0);
-      porMarca = t > 0 && (Date.now() - t) < 120000;   /* 2 min de margen */
-      if (t) sessionStorage.removeItem(MARCA_ENVIO);
-    } catch (err) {}
 
     /* LA PÁGINA MANDA. Cada una declara con qué banda recibe en
        data-vsb-aviso-inicio, y eso gana sobre cualquier señal de envío.
@@ -1086,6 +1110,13 @@
     marcarEstructuraCF();
     ejemplosEnFormularioCF();
     etiquetasYObligatoriosCF();
+
+    /* El envío de ClickFunnels RECARGA la página en lugar de avanzar al paso
+       siguiente. Medido en vivo. Si esta carga viene de un envío hecho en esta
+       misma página, se avanza ahora — y no se pinta ninguna banda, porque el
+       acuse lo da la página de destino. */
+    if (envioDeEstaPagina() && irAlSiguientePaso(true)) return;
+
     avisoTrasRecarga();
   }
   vigilarRed();   /* antes que nada: CF puede enviar en cuanto haya interacción */
