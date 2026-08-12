@@ -795,8 +795,14 @@
     } catch (err) {}
 
     if (!porURL && !porMarca) {
-      /* Visita normal: el saludo de bienvenida, tres segundos y se va. */
-      mostrarAviso('llegada');
+      /* Visita normal. Cada página decide con qué banda recibe: la página 2
+         saluda ('llegada', y se retira sola), y la 3 confirma el envío
+         ('enviado', y se queda), porque llegar ahí YA significa que el
+         formulario se envió. Lo dice data-vsb-aviso-inicio en el HTML. */
+      var aviso = document.getElementById('vsb-aviso-proyeccion') ||
+                  document.querySelector('.vsb-aviso');
+      var inicio = aviso && aviso.getAttribute('data-vsb-aviso-inicio');
+      mostrarAviso(inicio || 'llegada');
       return;
     }
     mostrarAviso('enviado');

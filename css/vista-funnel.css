@@ -956,6 +956,13 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
    ========================================================================== */
 .vsb-close-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: clamp(26px, 3cqw, 34px); }
 
+/* La página 3 es un solo bloque: sin una altura mínima, el pie legal negro
+   trepa hasta media pantalla y la página se ve a medio hacer. */
+.vsb-cierre-section {
+  display: grid; place-items: center;
+  min-height: min(58vh, 560px);
+}
+
 /* ==========================================================================
    18 · Footer legal (idéntico en las dos páginas)
    ========================================================================== */
