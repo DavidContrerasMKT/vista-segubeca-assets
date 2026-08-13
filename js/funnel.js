@@ -16,6 +16,34 @@
   var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   /* ======================================================================
+     0 · ¿Esta página es nuestra?
+
+     El CSS y este script se cargan desde el Header Code, y en ClickFunnels ese
+     código se aplica a TODAS las variantes de un split test — también a una
+     hecha entera en CF, que no lleva ni un bloque nuestro.
+
+     Sin esta puerta, el marcado por contenido de §8 tomaba SU formulario por el
+     nuestro: le ponía la tarjeta crema, le cambiaba los ejemplos por «María
+     Fernanda Gómez», le añadía asteriscos a las etiquetas y le escondía la
+     flecha de sus desplegables. Visto en vivo en la variante V2.
+
+     La señal es sencilla y no falla: nuestro HTML siempre viene envuelto en un
+     .vsb. Si no hay ninguno, esta página no es nuestra y aquí no hay nada que
+     hacer. Los manejadores que dependen de clases .vsb-* son inertes por su
+     cuenta, pero el marcado por contenido y el parcheo de la red no lo son, así
+     que esos sí se cierran con llave.
+     ====================================================================== */
+  function esNuestraPagina() {
+    /* Dos señales, las dos explícitas:
+         .vsb          el bloque de HTML que pegamos (el caso normal)
+         #vista-form…  los CSS ID de la ruta manual, que la guía sigue
+                       documentando para quien prefiera marcar a mano
+       Cualquiera de las dos significa «esta página es nuestra». Ninguna significa
+       que no lo es, y entonces no se toca nada. */
+    return !!document.querySelector('.vsb, #vista-form, #vista-card, #vista-hero-section, #vista-form-section');
+  }
+
+  /* ======================================================================
      1 · Popup del formulario
      ====================================================================== */
   var lastFocused = null;
@@ -1080,6 +1108,7 @@
   }
 
   document.addEventListener('click', function (e) {
+    if (!esNuestraPagina()) return;
     var bt = e.target.closest && e.target.closest('.elButton, button[type="submit"]');
     if (!bt || ENVIO.enCurso || bt.classList.contains('vsb-cf-enviado')) return;
     var form = bt.closest('#vista-form, .vsb-cf-form, .vsb-cf-card') ||
@@ -1106,6 +1135,8 @@
      9 · Arranque
      ====================================================================== */
   function arrancar() {
+    if (!esNuestraPagina()) return;   /* variante ajena del split test */
+    vigilarRed();
     personalize();
     marcarEstructuraCF();
     ejemplosEnFormularioCF();
@@ -1119,7 +1150,8 @@
 
     avisoTrasRecarga();
   }
-  vigilarRed();   /* antes que nada: CF puede enviar en cuanto haya interacción */
+  /* vigilarRed() se llama desde arrancar(), ya pasada la puerta: no tiene
+     sentido parchear XMLHttpRequest en una página que no es nuestra. */
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', arrancar);
@@ -1131,6 +1163,7 @@
      input después de cargar, y al hacerlo le devuelve su placeholder. Dos
      pasadas más lo dejan bien; son idempotentes, así que no pisan nada. */
   function reintentar() {
+    if (!esNuestraPagina()) return;
     marcarEstructuraCF();
     ejemplosEnFormularioCF();
     etiquetasYObligatoriosCF();
