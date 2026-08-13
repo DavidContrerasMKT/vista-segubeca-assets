@@ -839,7 +839,10 @@ select.vsb-input option { color: var(--black); }   /* la lista desplegada, no */
 /* El botón del video salta al formulario: que el desplazamiento se vea. */
 /* Con :has() para no afectar a otra variante del split test que comparta el
    Header Code y no lleve nada nuestro. */
-:where(html:has(.vsb)) { scroll-behavior: smooth; }
+/* Sin :where(): ClickFunnels declara `scroll-behavior` en `html` y con
+   especificidad 0 esta regla perdía. Con :has(.vsb) sube a 0,1,1 y gana, y
+   sigue sin tocar una variante del split test que no lleve nada nuestro. */
+html:has(.vsb) { scroll-behavior: smooth; }
 .vsb #proyeccion, #proyeccion:has(.vsb-shell) { scroll-margin-top: 24px; }
 .vsb-video-cta     { display: flex; justify-content: center; margin-top: clamp(20px, 2.4cqw, 28px); }
 .vsb-video-note    { margin: clamp(22px, 2.6cqw, 30px) auto 0; max-width: 62ch; }
